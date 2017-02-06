@@ -18,6 +18,22 @@ namespace ImportRenewals.Contexts
         {
 
         }
-        
+
+        //Configurations
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            //Remove conventions
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
+
+            //Configure the IDs as Key 
+            modelBuilder.Properties().Where(p => p.Name == p.ReflectedType.Name + "Id").Configure(p => p.IsKey());
+            //Configure the Strings as varchar
+            modelBuilder.Properties<string>().Configure(p => p.HasColumnType("varchar"));
+
+            base.OnModelCreating(modelBuilder);
+        }
+
     }
 }
