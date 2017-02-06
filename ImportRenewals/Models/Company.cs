@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -7,6 +8,7 @@ namespace ImportRenewals.Models
 {
     public class Company
     {
+        [Key]
         public Int32 CompanyId { get; set; }
         public string Hash { get; set; }
         public string WestconKey { get; set; }//Para os casos do arquivo DePara, representa o Be GEO ID
