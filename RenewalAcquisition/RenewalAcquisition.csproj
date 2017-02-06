@@ -195,9 +195,8 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RenewalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -208,12 +207,19 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\css\bootstrap.css" />
+    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\style.css" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\fonts\gotham-black.svg" />
+    <Content Include="Content\fonts\gotham-bold.svg" />
+    <Content Include="Content\fonts\gotham-book.svg" />
+    <Content Include="Content\fonts\gotham-light.svg" />
+    <Content Include="Content\fonts\gotham-medium.svg" />
+    <Content Include="Content\fonts\gotham-thin.svg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -221,10 +227,47 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\fonts\gotham-black.eot" />
+    <Content Include="Content\fonts\gotham-black.otf" />
+    <Content Include="Content\fonts\gotham-black.ttf" />
+    <Content Include="Content\fonts\gotham-black.woff" />
+    <Content Include="Content\fonts\gotham-bold.eot" />
+    <Content Include="Content\fonts\gotham-bold.otf" />
+    <Content Include="Content\fonts\gotham-bold.ttf" />
+    <Content Include="Content\fonts\gotham-bold.woff" />
+    <Content Include="Content\fonts\gotham-book.eot" />
+    <Content Include="Content\fonts\gotham-book.otf" />
+    <Content Include="Content\fonts\gotham-book.ttf" />
+    <Content Include="Content\fonts\gotham-book.woff" />
+    <Content Include="Content\fonts\gotham-light.eot" />
+    <Content Include="Content\fonts\gotham-light.otf" />
+    <Content Include="Content\fonts\gotham-light.ttf" />
+    <Content Include="Content\fonts\gotham-light.woff" />
+    <Content Include="Content\fonts\gotham-medium.eot" />
+    <Content Include="Content\fonts\gotham-medium.otf" />
+    <Content Include="Content\fonts\gotham-medium.ttf" />
+    <Content Include="Content\fonts\gotham-medium.woff" />
+    <Content Include="Content\fonts\gotham-thin.eot" />
+    <Content Include="Content\fonts\gotham-thin.ttf" />
+    <Content Include="Content\fonts\gotham-thin.woff" />
+    <Content Include="Content\fonts\myriadpro-bold.eot" />
+    <Content Include="Content\fonts\MyriadPro-Bold.otf" />
+    <Content Include="Content\fonts\myriadpro-bold.ttf" />
+    <Content Include="Content\fonts\myriadpro-bold.woff" />
+    <Content Include="Content\fonts\myriadPro-regular.eot" />
+    <Content Include="Content\fonts\MyriadPro-Regular.otf" />
+    <Content Include="Content\fonts\myriadPro-regular.ttf" />
+    <Content Include="Content\fonts\myriadPro-regular.woff" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\index.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -267,6 +310,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Renewal\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
