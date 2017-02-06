@@ -153,7 +153,7 @@ namespace ImportRenewals.Business
                     Quote quote = new Quote();
                     QuoteLine quoteLine = new QuoteLine();
                     DateTime start, end;
-                    VRFValue item;
+                    
                     string beGeoId;
 
                     line = reader.ReadLine();                                      
@@ -179,12 +179,13 @@ namespace ImportRenewals.Business
 
 
                         //VRF Serial Number
-                        /*string serialNumber = fields[12].ToString();
-                        quoteLine.ItemLevel = new List<VRFValue>();
-                        item = new VRFValue();
-                        item.Value = serialNumber;
+                        string serialNumber = fields[12].ToString();
+                        quoteLine.VRFValues = new List<VRFValue>();
+                        VRFValue vrfValue = new VRFValue();
+                        vrfValue.Value = serialNumber;
+                        vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
                         quoteLine.ItemLevel.Add(item);
-                        quote.QuoteLines.Add(quoteLine);*/
+                        quote.QuoteLines.Add(quoteLine);
 
                         //Companies
                         beGeoId = fields[22].ToString();

@@ -30,6 +30,6 @@ namespace ImportRenewals.Models
         [ForeignKey("QuoteId")]
         public virtual Quote Quote { get; set; }
 
-        public virtual IEnumerable<VRFValue> ItemLevel { get; set; }
+        public virtual IEnumerable<VRFValue> VRFValues { get; set; }
     }
 }
