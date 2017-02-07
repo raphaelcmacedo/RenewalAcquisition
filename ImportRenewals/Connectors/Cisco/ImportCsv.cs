@@ -21,13 +21,6 @@ namespace ImportRenewals.Business
             int count = 0;
             try
             {
-                //Destaca o fabricante Cisco
-                Vendor vendor = null;
-                using (VendorRepository repository = new VendorRepository())
-                {
-                    vendor = repository.FindByName("Cisco");
-                }
-
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
                 {
                     String line = reader.ReadLine();
@@ -183,6 +176,20 @@ namespace ImportRenewals.Business
             List<String> message = new List<string>();
             try
             {
+                //Destaca o fabricante Cisco
+                Vendor vendor = null;
+                using (VendorRepository repository = new VendorRepository())
+                {
+                    vendor = repository.FindByName("Cisco");
+                }
+
+                VRF vrfSerialNumber = null;
+                using (VRFRepository repository = new VRFRepository())
+                {
+                    vrfSerialNumber = repository.FindByName("VRF_SERIAL_NUMBER_2");
+                }
+
+
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
                 {
                     String line = reader.ReadLine();
@@ -248,15 +255,20 @@ namespace ImportRenewals.Business
                         quoteLine.ContractDurationUnit = 'D';
                         quoteLine.Quantity = 1;//Campo não encontrado
 
+                        //VRFs
+                        List<VRFValue> vrfValues = new List<VRFValue>();
 
                         //VRF Serial Number
                         //string serialNumber = fields[12].ToString();
-                        //quoteLine.VRFValues = new List<VRFValue>();
+                        quoteLine.VRFValues = new List<VRFValue>();
                         //VRFValue vrfValue = new VRFValue();
-                        //vrfValue.Value = serialNumber;
+                        vrfValue.VRF = vrfSerialNumber;
                         //vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
-                        //quoteLine.ItemLevel.Add(item);
-                        //quote.QuoteLines.Add(quoteLine);
+                        vrfValues.Add(vrfValue);
+
+                        quoteLine.VRFValues = vrfValues;
+
+                        quote.QuoteLines.Add(quoteLine);
 
                         //Companies
                         beGeoId = this.AdjustText(fields[22].ToString());
@@ -301,7 +313,7 @@ namespace ImportRenewals.Business
                     }
 
                 }
-            }catch(Exception e)
+            }catch(Exception e)          
             {
                 throw e;
             }

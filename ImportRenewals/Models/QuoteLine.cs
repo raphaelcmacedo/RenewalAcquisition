@@ -10,11 +10,11 @@ namespace ImportRenewals.Models
     public class QuoteLine
     {
         [Key]
-        public Int32 QuoteLineId { get; set; }
-        public Int32 QuoteId{ get; set; }
+        public Int64 QuoteLineId { get; set; }
+        public Int64 QuoteId{ get; set; }
         public String Hash { get; set; }
         public String SKU { get; set; }
-        public Int32 Quantity { get; set; }
+        public Int64 Quantity { get; set; }
         public Decimal? ListPrice { get; set; } 
         public Decimal? DiscountPercent { get; set; }
         public Decimal? PurchasePrice { get; set; }
