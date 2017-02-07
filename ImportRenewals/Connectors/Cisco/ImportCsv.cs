@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 
 namespace ImportRenewals.Business
@@ -17,7 +18,7 @@ namespace ImportRenewals.Business
         public Response CheckFile(Byte[] file,string fileName,string fileExtension)
         {
             Response resp = new Response();
-
+            int count = 0;
             try
             {
                 //Destaca o fabricante Cisco
@@ -35,23 +36,17 @@ namespace ImportRenewals.Business
 
                     this.ValidateHeader(fields);
                     line = reader.ReadLine();
-
-                    Regex RE = new Regex("\\n", RegexOptions.Multiline);
-                    int count = RE.Matches(reader.ReadToEnd()).Count,
-                        index = 0;
+                    int index = 0;
 
                     while (!String.IsNullOrEmpty(line) && index < 10)
                     {
                         samples.Add(line);
+                        line = reader.ReadLine();
+                        index++;
                     }
 
                     resp.Sample = samples.ToArray();
-                    resp.Success = (count < 10000) ? true : false;
-                    if (!resp.Success)
-                    {
-                        resp.TypeOfMessage = "Warning";
-                        resp.Message = "This file may contain tens of thousand lines, so an email will be sent to you when the process is over";
-                    }
+                    resp.Success = true;
                 }
             }catch(Exception e)
             {
@@ -59,6 +54,23 @@ namespace ImportRenewals.Business
                 resp.Message = e.Message;
                 resp.TypeOfMessage = "Error";
             }
+
+            if (resp.Success)
+            {
+                using (StreamReader reader = new StreamReader(new MemoryStream(file)))
+                {
+                    String full = reader.ReadToEnd();
+                    count = full.Split('\n').Length - 1;
+
+                    resp.Success = (count < 10000) ? true : false;
+                    if (!resp.Success)
+                    {
+                        resp.TypeOfMessage = "Warning";
+                        resp.Message = "This file may contain tens of thousand lines, so an email will be sent to you when the process is over";
+                    }
+                }                
+            }
+
             return resp;            
         }
 
@@ -82,51 +94,52 @@ namespace ImportRenewals.Business
                     "Instance ID",//13
                     "Quote Created By",//14
                     "Quote Ordered By",//15
-                    "Quote Number",//16
-                    "Cisco SO Number",//17
-                    "End of Support Date",//18
-                    "Distributor PO",//19
-                    "Distributor Invoice #",//20
-                    "Reseller BE GEO ID",//21
-                    "Distributor Reseller ID",//22
-                    "Reseller Bill To #",//23
-                    "Reseller Name",//24
-                    "Partner Type",//25
-                    "Reseller PO",//26
-                    "Reseller Address 1",//27
-                    "Reseller Address 2",//28
-                    "Reseller City",//29
-                    "Reseller State",//30
-                    "Reseller Postal Code",//31
-                    "Reseller Country",//32
-                    "Reseller Contact First Name",//33
-                    "Reseller Contact Last Name",//34
-                    "Reseller Contact Phone #",//35
-                    "Reseller Contact Email",//36
-                    "End Customer #",//37
-                    "End Customer Name",//38
-                    "End Customer Address 1",//39
-                    "End Customer Address 2",//40
-                    "End Customer City",//41
-                    "End Customer State",//42
-                    "End Customer Postal Code",//43
-                    "End Customer Country",//44
-                    "End Customer Contact First Name",//45
-                    "End Customer Contact Last Name",//46
-                    "End Customer Contact Phone #",//47
-                    "End Customer Contact Email",//48
-                    "End Customer Vertical",//49
-                    "Reseller HQ Party ID",//50
-                    "Reseller HQ Party Name",//51
-                    "End Customer HQ Party ID",//52
-                    "End Customer HQ Party Name",//53
-                    "Quarter of Expiration",//54
-                    "Install Site ID",//55
-                    "End of Service Renewal Date",//56
-                    "Quote Type",//57
-                    "SN Validation",//58
-                    "Install Site Validation",//59
-                    "Auto Quote Number"//60
+                    "Quote Coverage Conversion Date", //16
+                    "Quote Number",//17
+                    "Cisco SO Number",//18
+                    "End of Support Date",//19
+                    "Distributor PO",//20
+                    "Distributor Invoice #",//21
+                    "Reseller BE GEO ID",//22
+                    "Distributor Reseller ID",//23
+                    "Reseller Bill To #",//24
+                    "Reseller Name",//25
+                    "Partner Type",//26
+                    "Reseller PO",//27
+                    "Reseller Address 1",//28
+                    "Reseller Address 2",//29
+                    "Reseller City",//30
+                    "Reseller State",//31
+                    "Reseller Postal Code",//32
+                    "Reseller Country",//33
+                    "Reseller Contact First Name",//34
+                    "Reseller Contact Last Name",//35
+                    "Reseller Contact Phone #",//36
+                    "Reseller Contact Email",//37
+                    "End Customer #",//38
+                    "End Customer Name",//39
+                    "End Customer Address 1",//40
+                    "End Customer Address 2",//41
+                    "End Customer City",//42
+                    "End Customer State",//43
+                    "End Customer Postal Code",//44
+                    "End Customer Country",//45
+                    "End Customer Contact First Name",//46
+                    "End Customer Contact Last Name",//47
+                    "End Customer Contact Phone #",//48
+                    "End Customer Contact Email",//49
+                    "End Customer Vertical",//50
+                    "Reseller HQ Party ID",//51
+                    "Reseller HQ Party Name",//52
+                    "End Customer HQ Party ID",//54
+                    "End Customer HQ Party Name",//55
+                    "Quarter of Expiration",//56
+                    "Install Site ID",//57
+                    "End of Service Renewal Date",//58
+                    "Quote Type",//59
+                    "SN Validation",//60
+                    "Install Site Validation",//61
+                    "Auto Quote Number"//62
             };
 
             for(int i=0,len = expected.Count; i < len; i++)
@@ -141,9 +154,33 @@ namespace ImportRenewals.Business
 
 
 
-        public void ReadFile(Byte[] file,string region)
+        public Response ReadFile(Byte[] file,string region,bool async)
         {
+            Response resp = new Response();
+            if (async)
+            {
+                resp.Success = true;
+                resp.Message = "You will receive an email with more information when the process ends.";
+                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(file, region)));
+                thread.SetApartmentState(ApartmentState.STA);
 
+                thread.Start();
+                thread.Join();
+            }else
+            {
+                this.GetData(file, region);
+                resp.Success = true;
+                resp.Message = "The data was saved in our database";
+            }
+
+            return resp;
+           
+        }
+
+        public void GetData(Byte[] file, string region)
+        {
+            List<Quote> success = new List<Quote>();
+            List<Quote> errors = new List<Quote>();
             try
             {
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
@@ -153,78 +190,78 @@ namespace ImportRenewals.Business
                     Quote quote = new Quote();
                     QuoteLine quoteLine = new QuoteLine();
                     DateTime start, end;
-                    
+
                     string beGeoId;
 
-                    line = reader.ReadLine();                                      
+                    line = reader.ReadLine();
+                    line = reader.ReadLine();
 
                     while (!String.IsNullOrEmpty(line))
                     {
-                        line = reader.ReadLine();
+                        line = line.Replace(", ", " ");
                         fields = line.Split(',');
-                        quote.QuoteNumber = fields[17].ToString();
-                        quote.CloseDate = this.ToDate(fields[19].ToString());
+                        quote.QuoteNumber = this.AdjustText(fields[17].ToString());
+                        quote.CloseDate = this.ToDate(this.AdjustText(fields[19].ToString()));
                         quote.QuoteType = "Renewal";
                         quote.CountryCode = region;
-                        quote.ExpiryDate = this.ToDate(fields[58].ToString());
-                        quote.QuoteRequesterName = fields[14].ToString();//ou 16
+                        quote.ExpiryDate = this.ToDate(this.AdjustText(fields[57].ToString()));
+                        quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
 
                         //Quoteline
-                        quoteLine.SKU = fields[11].ToString();
-                        start = this.ToDate(fields[6].ToString());
-                        end = this.ToDate(fields[7].ToString());
+                        quoteLine.SKU = this.AdjustText(fields[11].ToString());
+                        start = this.ToDate(this.AdjustText(fields[6].ToString()));
+                        end = this.ToDate(this.AdjustText(fields[7].ToString()));
                         quoteLine.ContractDuration = (end - start).TotalDays;
                         quoteLine.ContractDurationUnit = 'D';
                         quoteLine.Quantity = 1;//Campo não encontrado
 
 
                         //VRF Serial Number
-                        string serialNumber = fields[12].ToString();
-                        quoteLine.VRFValues = new List<VRFValue>();
-                        VRFValue vrfValue = new VRFValue();
-                        vrfValue.Value = serialNumber;
-                        vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
-                        quoteLine.ItemLevel.Add(item);
-                        quote.QuoteLines.Add(quoteLine);
+                        //string serialNumber = fields[12].ToString();
+                        //quoteLine.VRFValues = new List<VRFValue>();
+                        //VRFValue vrfValue = new VRFValue();
+                        //vrfValue.Value = serialNumber;
+                        //vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
+                        //quoteLine.ItemLevel.Add(item);
+                        //quote.QuoteLines.Add(quoteLine);
 
                         //Companies
-                        beGeoId = fields[22].ToString();
+                        beGeoId = this.AdjustText(fields[22].ToString());
                         Company reseller = new Company();
                         reseller.VendorKey = beGeoId;
-                        reseller.Name = fields[25].ToString();
-                        reseller.Line1 = fields[28].ToString();
-                        reseller.Line2 = fields[29].ToString();
-                        reseller.State = fields[31].ToString();
-                        reseller.City = fields[30].ToString();
-                        reseller.Country = fields[33].ToString();
-                        reseller.ZipCode = fields[32].ToString();
-                        reseller.ContactName = fields[34].ToString() + " " + fields[35].ToString();
-                        reseller.ContactEmail = fields[37].ToString();
+                        reseller.Name = this.AdjustText(fields[25].ToString());
+                        reseller.Line1 = this.AdjustText(fields[28].ToString());
+                        reseller.Line2 = this.AdjustText(fields[29].ToString());
+                        reseller.State = this.AdjustText(fields[31].ToString());
+                        reseller.City = this.AdjustText(fields[30].ToString());
+                        reseller.Country = this.AdjustText(fields[33].ToString());
+                        reseller.ZipCode = this.AdjustText(fields[32].ToString());
+                        reseller.ContactName = this.AdjustText(fields[34].ToString()) + " " + this.AdjustText((fields[35].ToString()));
+                        reseller.ContactEmail = this.AdjustText(fields[37].ToString());
 
                         quote.Reseller = reseller;
                         quote.ShipTo = reseller;
                         quote.BillTo = reseller;
 
                         Company endUser = new Company();
-                        endUser.Name = fields[39].ToString();
-                        endUser.Line1 = fields[40].ToString();
-                        endUser.Line2 = fields[41].ToString();
-                        endUser.City = fields[42].ToString();
-                        endUser.State = fields[43].ToString();
-                        endUser.Country = fields[45].ToString();
-                        endUser.ZipCode = fields[44].ToString();
-                        endUser.ContactName = fields[46].ToString() + " " + fields[41].ToString();
-                        endUser.ContactEmail = fields[48].ToString();
+                        endUser.Name = this.AdjustText(fields[39].ToString());
+                        endUser.Line1 = this.AdjustText(fields[40].ToString());
+                        endUser.Line2 = this.AdjustText(fields[41].ToString());
+                        endUser.City = this.AdjustText(fields[42].ToString());
+                        endUser.State = this.AdjustText(fields[43].ToString());
+                        endUser.Country = this.AdjustText(fields[45].ToString());
+                        endUser.ZipCode = this.AdjustText(fields[44].ToString());
+                        endUser.ContactName = this.AdjustText(fields[46].ToString()) + " " + this.AdjustText(fields[41].ToString());
+                        endUser.ContactEmail = this.AdjustText(fields[48].ToString());
 
                         quote.EndUser = endUser;
-
+                        line = reader.ReadLine();
                     }
 
                 }
-            }
-            catch (Exception e)
+            }catch(Exception e)
             {
-               
+                throw e;
             }
         }
 
