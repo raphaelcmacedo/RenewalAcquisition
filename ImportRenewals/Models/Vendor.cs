@@ -9,7 +9,7 @@ namespace ImportRenewals.Models
     public class Vendor
     {
         [Key]
-        public Int32 VendorId { get; set; }
+        public Int64 VendorId { get; set; }
         public String Name { get; set; }
     }
 }

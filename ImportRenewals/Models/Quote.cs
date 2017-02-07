@@ -10,7 +10,7 @@ namespace ImportRenewals.Models
     public class Quote
     {
         [Key]
-        public Int32 QuoteId { get; set; }
+        public Int64 QuoteId { get; set; }
         public String QuoteNumber { get; set; }
         public String Hash { get; set; }
         public DateTime ExpiryDate { get; set; }
@@ -25,11 +25,11 @@ namespace ImportRenewals.Models
         public string QuoteRequesterName { get; set; }
         public string QuoteRequesterEmail { get; set; }
 
-        public Int32 EndUserId { get; set; }
-        public Int32 BillToId { get; set; }
-        public Int32 ShipToId { get; set; }
-        public Int32 ResellerId { get; set; }
-        public Int32 VendorId { get; set; }
+        public Int64 EndUserId { get; set; }
+        public Int64 BillToId { get; set; }
+        public Int64 ShipToId { get; set; }
+        public Int64 ResellerId { get; set; }
+        public Int64 VendorId { get; set; }
         
         [ForeignKey("EndUserId")]
         public virtual Company EndUser { get; set; }
