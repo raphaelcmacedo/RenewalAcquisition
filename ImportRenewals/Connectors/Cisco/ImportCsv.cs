@@ -179,8 +179,8 @@ namespace ImportRenewals.Business
 
         public void GetData(Byte[] file, string region)
         {
-            List<Quote> success = new List<Quote>();
-            List<Quote> errors = new List<Quote>();
+            Int32 success = 0, error = 0, count = 0;
+            List<String> message = new List<string>();
             try
             {
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
@@ -194,17 +194,50 @@ namespace ImportRenewals.Business
                     string beGeoId;
 
                     line = reader.ReadLine();
+                    int columns = line.Split(',').Length;
+
                     line = reader.ReadLine();
 
                     while (!String.IsNullOrEmpty(line))
-                    {
-                        line = line.Replace(", ", " ");
+                    {                        
                         fields = line.Split(',');
+                        count++;
+
+                        if(fields.Length != columns)
+                        {
+                            error++;
+                            message.Add("Error at line " + count + " - An unexpected character was found.\n" + line);
+                            line = reader.ReadLine();
+                            continue;
+                        }
+
                         quote.QuoteNumber = this.AdjustText(fields[17].ToString());
-                        quote.CloseDate = this.ToDate(this.AdjustText(fields[19].ToString()));
+                        try
+                        {
+                            quote.CloseDate = this.ToDate(this.AdjustText(fields[19].ToString()));
+                        }
+                        catch
+                        {
+                            error++;
+                            message.Add("Error at line " + count + " - The Close Date for Quote Number " + quote.QuoteNumber + " wasn't an expected format.\n" + line);
+                            line = reader.ReadLine();
+                            continue;
+                        }
+
+                        try
+                        {
+                            quote.ExpiryDate = this.ToDate(this.AdjustText(fields[57].ToString()));
+                        }
+                        catch
+                        {
+                            error++;
+                            message.Add("Error at line " + count + " - The Expiry Date for Quote Number " + quote.QuoteNumber + " wasn't an expected format.\n" + line);
+                            line = reader.ReadLine();
+                            continue;
+                        }
+
                         quote.QuoteType = "Renewal";
                         quote.CountryCode = region;
-                        quote.ExpiryDate = this.ToDate(this.AdjustText(fields[57].ToString()));
                         quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
 
                         //Quoteline
@@ -227,6 +260,14 @@ namespace ImportRenewals.Business
 
                         //Companies
                         beGeoId = this.AdjustText(fields[22].ToString());
+                        if (String.IsNullOrEmpty(beGeoId))
+                        {
+                            error++;
+                            message.Add("Error at line " + count + " - BE GEO ID was not found for Quote Number: " + quote.QuoteNumber + ".\n" + line);
+                            line = reader.ReadLine();
+                            continue;
+                        }
+
                         Company reseller = new Company();
                         reseller.VendorKey = beGeoId;
                         reseller.Name = this.AdjustText(fields[25].ToString());
@@ -255,6 +296,7 @@ namespace ImportRenewals.Business
                         endUser.ContactEmail = this.AdjustText(fields[48].ToString());
 
                         quote.EndUser = endUser;
+                        success++;
                         line = reader.ReadLine();
                     }
 
