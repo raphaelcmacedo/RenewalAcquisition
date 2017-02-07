@@ -179,13 +179,13 @@ namespace ImportRenewals.Business
 
 
                         //VRF Serial Number
-                        string serialNumber = fields[12].ToString();
+                        /*string serialNumber = fields[12].ToString();
                         quoteLine.VRFValues = new List<VRFValue>();
                         VRFValue vrfValue = new VRFValue();
                         vrfValue.Value = serialNumber;
                         vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
                         quoteLine.ItemLevel.Add(item);
-                        quote.QuoteLines.Add(quoteLine);
+                        quote.QuoteLines.Add(quoteLine);*/
 
                         //Companies
                         beGeoId = fields[22].ToString();
