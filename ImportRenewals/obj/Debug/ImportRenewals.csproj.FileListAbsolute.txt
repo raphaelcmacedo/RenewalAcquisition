@@ -18,3 +18,5 @@ D:\Desenvolvimento\RenewalAcquisition\ImportRenewals\bin\EntityFramework.SqlServ
 D:\Desenvolvimento\RenewalAcquisition\ImportRenewals\obj\Debug\ImportRenewals.dll
 D:\Desenvolvimento\RenewalAcquisition\ImportRenewals\obj\Debug\ImportRenewals.pdb
 D:\Desenvolvimento\RenewalAcquisition\ImportRenewals\obj\Debug\ImportRenewals.csprojResolveAssemblyReference.cache
+D:\Desenvolvimento\RenewalAcquisition\ImportRenewals\bin\EntityFramework.Extended.dll
+D:\Desenvolvimento\RenewalAcquisition\ImportRenewals\bin\EntityFramework.Extended.xml

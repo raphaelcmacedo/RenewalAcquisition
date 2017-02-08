@@ -83,3 +83,5 @@ D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Microsoft.Owin.Secu
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\obj\Debug\RenewalAcquisition.csprojResolveAssemblyReference.cache
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\obj\Debug\RenewalAcquisition.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\obj\Debug\RenewalAcquisition.pdb
+D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.Extended.dll
+D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.Extended.xml
