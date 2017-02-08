@@ -40,7 +40,7 @@ namespace RenewalAcquisition.Controllers
                     bool async = Convert.ToBoolean(Request.Params["Async"].ToString());
                     string email = Request.Params["Email"].ToString();
 
-                    importer.ReadFile(file, "USA", async);
+                    importer.ReadFile(file, "USA", async,email);
 
                 }
                 catch (Exception e)

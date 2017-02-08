@@ -147,21 +147,21 @@ namespace ImportRenewals.Business
 
 
 
-        public Response ReadFile(Byte[] file,string region,bool async)
+        public Response ReadFile(Byte[] file,string region,bool async,string email)
         {
             Response resp = new Response();
             if (async)
             {
                 resp.Success = true;
                 resp.Message = "You will receive an email with more information when the process ends.";
-                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(file, region)));
+                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(file, region,email)));
                 thread.SetApartmentState(ApartmentState.STA);
 
                 thread.Start();
                 thread.Join();
             }else
             {
-                this.GetData(file, region);
+                this.GetData(file, region,email);
                 resp.Success = true;
                 resp.Message = "The data was saved in our database";
             }
@@ -170,10 +170,12 @@ namespace ImportRenewals.Business
            
         }
 
-        public void GetData(Byte[] file, string region)
+        public void GetData(Byte[] file, string region, string email)
         {
             Int32 success = 0, error = 0, count = 0;
             List<String> message = new List<string>();
+            Dictionary<string, Quote> quoteDictionary = new Dictionary<string, Quote>();
+
             try
             {
                 //Destaca o fabricante Cisco
@@ -221,7 +223,7 @@ namespace ImportRenewals.Business
                         quote.QuoteNumber = this.AdjustText(fields[17].ToString());
                         try
                         {
-                            quote.CloseDate = this.ToDate(this.AdjustText(fields[19].ToString()));
+                            quote.CloseDate = this.ToDate(this.AdjustText(fields[7].ToString()));
                         }
                         catch
                         {
@@ -268,7 +270,7 @@ namespace ImportRenewals.Business
                         vrfValues.Add(vrfValue);
 
                         quoteLine.VRFValues = vrfValues;
-
+                        quote.QuoteLines = new List<QuoteLine>();
                         if (quote.QuoteLines == null)
                         {
                             quote.QuoteLines = new List<QuoteLine>();
@@ -314,20 +316,35 @@ namespace ImportRenewals.Business
 
                         quote.EndUser = endUser;
 
-                        //Grava a quote
-                        using (QuoteRepository repository = new QuoteRepository())
-                        {
-                            repository.Add(quote);
-                        }
-
+                        //Grava a quote    
                         success++;
                         line = reader.ReadLine();
+
+                        if (!quoteDictionary.ContainsKey(quote.QuoteNumber))
+                        {
+                            quoteDictionary.Add(quote.QuoteNumber, quote);
+                        }else
+                        {
+                            quoteDictionary[quote.QuoteNumber].QuoteLines.Add(quoteLine);
+                        }
                     }
 
+                    using (QuoteRepository repository = new QuoteRepository())
+                    {
+                        foreach (KeyValuePair<string, Quote> dict in quoteDictionary)
+                        {
+                            //repository.Add(dict.Value);
+                            Console.WriteLine("Value = {0}", dict.Key);
+                        }
+                    }
+
+                    Email.Renewal mail = new Email.Renewal();
+                    mail.Success(message, success, error, email);
                 }
             }catch(Exception e)          
             {
-                throw e;
+                Email.Renewal mail = new Email.Renewal();
+                mail.Error(e.Message);
             }
         }
 
@@ -386,6 +403,7 @@ namespace ImportRenewals.Business
             text = text.Contains("\t") ? text.Replace("\t", "") : text;
             text = text.Contains("\r") ? text.Replace("\r", "") : text;
             text = text.Contains("&nbsp;") ? text.Replace("&nbsp;", "") : text;
+            text = text.Contains("\"") ? text.Replace("\"", "") : text;
 
             return text.Trim();
         }

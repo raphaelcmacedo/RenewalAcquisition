@@ -17,5 +17,10 @@ namespace ImportRenewals.Helpers
         {
             get { return GetValue("fileTemp"); }
         }
+
+        public static string ServidorSMTP
+        {
+            get { return GetValue("ServidorSMTP"); }
+        }
     }
 }
