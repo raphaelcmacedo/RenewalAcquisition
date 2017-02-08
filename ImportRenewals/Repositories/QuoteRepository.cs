@@ -28,6 +28,7 @@ namespace ImportRenewals.Repositories
                 {
                     quote.Hash = Util.GenerateHash();
                 }
+                
                 foreach (QuoteLine quoteLine in quote.QuoteLines)
                 {
                     if (string.IsNullOrEmpty(quoteLine.Hash))
@@ -62,9 +63,16 @@ namespace ImportRenewals.Repositories
         public Quote FindByNumber(string quoteNumber)
         {
             QuoteContext context = (QuoteContext)DbContext;
-            return (from q in context.Quotes
+            Quote quote =  (from q in context.Quotes
                     where q.QuoteNumber.Equals(quoteNumber)
-                    select q).FirstOrDefault();
+                    select q)
+                    .Include(q => q.QuoteLines)
+                    .Include(q => q.QuoteLines.Select(l => l.VRFValues))
+                    .FirstOrDefault();
+
+            
+
+            return quote;
         }
 
         public void RemoveOldQuote(Quote newQuote)
@@ -76,20 +84,28 @@ namespace ImportRenewals.Repositories
                 QuoteContext context = (QuoteContext)DbContext;
 
                 List<QuoteLine> lines = new List<QuoteLine>();
-                lines.AddRange(old.QuoteLines);
-
-                foreach (QuoteLine quoteLine in lines)
+                if (old.QuoteLines != null && old.QuoteLines.Count > 0)
                 {
-                    //Delete the VRFs
-                    List<VRFValue> vrfValues = new List<VRFValue>();
-                    vrfValues.AddRange(quoteLine.VRFValues);
-                    foreach (VRFValue vrfValue in vrfValues)
-                    {
-                        DbContext.Set<VRFValue>().Remove(vrfValue);
-                    }
+                    lines.AddRange(old.QuoteLines);
 
-                    DbContext.Set<QuoteLine>().Remove(quoteLine);
+                    foreach (QuoteLine quoteLine in lines)
+                    {
+                        //Delete the VRFs
+                        if (quoteLine.VRFValues != null && quoteLine.VRFValues.Count() > 0)
+                        {
+                            List<VRFValue> vrfValues = new List<VRFValue>();
+                            vrfValues.AddRange(quoteLine.VRFValues);
+                            foreach (VRFValue vrfValue in vrfValues)
+                            {
+                                DbContext.Set<VRFValue>().Remove(vrfValue);
+                            }
+
+                        }
+
+                        DbContext.Set<QuoteLine>().Remove(quoteLine);
+                    }
                 }
+                
 
                 //Delete the quotes
                 DbContext.Set<Quote>().Remove(old);

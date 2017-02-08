@@ -11,25 +11,25 @@ namespace ImportRenewals.Models
     {
         [Key]
         public Int64 QuoteLineId { get; set; }
-        public Int64 QuoteId{ get; set; }
+        public Int64 QuoteId { get; set; }
         public String Hash { get; set; }
         public String SKU { get; set; }
-        public Int64 Quantity { get; set; }
-        public Decimal? ListPrice { get; set; } 
+        public Int32 Quantity { get; set; }
+        public Decimal? ListPrice { get; set; }
         public Decimal? DiscountPercent { get; set; }
         public Decimal? PurchasePrice { get; set; }
         public Decimal? SellingPrice { get; set; }
-        public Decimal? SetGlobalPoints { get; set; } 
+        public Decimal? SetGlobalPoints { get; set; }
         public String ParentLine { get; set; }
         public String Remarks { get; set; }
-        
-        public double? ContractDuration { get; set; }
+
+        public Decimal? ContractDuration { get; set; }
         public Char ContractDurationUnit { get; set; }
         public DateTime? EndDate { get; set; }
 
         [ForeignKey("QuoteId")]
         public virtual Quote Quote { get; set; }
 
-        public virtual IEnumerable<VRFValue> VRFValues { get; set; }
+        public virtual ICollection<VRFValue> VRFValues { get; set; }
     }
 }

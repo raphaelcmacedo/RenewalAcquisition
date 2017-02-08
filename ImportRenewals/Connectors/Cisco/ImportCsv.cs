@@ -249,34 +249,7 @@ namespace ImportRenewals.Business
                         quote.Vendor = vendor;
                         quote.CountryCode = region;
                         quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
-
-                        //Quoteline
-                        quoteLine.SKU = this.AdjustText(fields[11].ToString());
-                        start = this.ToDate(this.AdjustText(fields[6].ToString()));
-                        end = this.ToDate(this.AdjustText(fields[7].ToString()));
-                        quoteLine.ContractDuration = (end - start).TotalDays;
-                        quoteLine.ContractDurationUnit = 'D';
-                        quoteLine.Quantity = 1;//Campo não encontrado
-
-                        //VRFs
-                        List<VRFValue> vrfValues = new List<VRFValue>();
-
-                        //VRF Serial Number
-                        string serialNumber = fields[12].ToString();
-                        VRFValue vrfValue = new VRFValue();
-                        vrfValue.VRF = vrfSerialNumber;
-                        vrfValue.Value = serialNumber;
-                        vrfValue.VRFLevel = "I";
-                        vrfValues.Add(vrfValue);
-
-                        quoteLine.VRFValues = vrfValues;
-                        quote.QuoteLines = new List<QuoteLine>();
-                        if (quote.QuoteLines == null)
-                        {
-                            quote.QuoteLines = new List<QuoteLine>();
-                        }
-                        quote.QuoteLines.Add(quoteLine);
-
+                        
                         //Companies
                         beGeoId = this.AdjustText(fields[22].ToString());
                         if (String.IsNullOrEmpty(beGeoId))
@@ -316,6 +289,34 @@ namespace ImportRenewals.Business
 
                         quote.EndUser = endUser;
 
+
+                        //Quoteline
+                        quoteLine.SKU = this.AdjustText(fields[11].ToString());
+                        start = this.ToDate(this.AdjustText(fields[6].ToString()));
+                        end = this.ToDate(this.AdjustText(fields[7].ToString()));
+                        quoteLine.ContractDuration = (Decimal)(end - start).TotalDays;
+                        quoteLine.ContractDurationUnit = 'D';
+                        quoteLine.Quantity = 1;//Campo não encontrado
+
+                        //VRFs
+                        List<VRFValue> vrfValues = new List<VRFValue>();
+
+                        //VRF Serial Number
+                        string serialNumber = fields[12].ToString();
+                        VRFValue vrfValue = new VRFValue();
+                        vrfValue.VRF = vrfSerialNumber;
+                        vrfValue.Value = serialNumber;
+                        vrfValue.VRFLevel = "I";
+                        vrfValues.Add(vrfValue);
+
+                        quoteLine.VRFValues = vrfValues;
+                        quote.QuoteLines = new List<QuoteLine>();
+                        if (quote.QuoteLines == null)
+                        {
+                            quote.QuoteLines = new List<QuoteLine>();
+                        }
+                        quote.QuoteLines.Add(quoteLine);
+
                         //Grava a quote    
                         success++;
                         line = reader.ReadLine();
@@ -333,8 +334,7 @@ namespace ImportRenewals.Business
                     {
                         foreach (KeyValuePair<string, Quote> dict in quoteDictionary)
                         {
-                            //repository.Add(dict.Value);
-                            Console.WriteLine("Value = {0}", dict.Key);
+                            repository.Add(dict.Value);
                         }
                     }
 
