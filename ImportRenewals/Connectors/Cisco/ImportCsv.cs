@@ -244,6 +244,7 @@ namespace ImportRenewals.Business
                         }
 
                         quote.QuoteType = "Renewal";
+                        quote.Vendor = vendor;
                         quote.CountryCode = region;
                         quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
 
@@ -259,15 +260,17 @@ namespace ImportRenewals.Business
                         List<VRFValue> vrfValues = new List<VRFValue>();
 
                         //VRF Serial Number
-                        //string serialNumber = fields[12].ToString();
-                        quoteLine.VRFValues = new List<VRFValue>();
-                        //VRFValue vrfValue = new VRFValue();
+                        string serialNumber = fields[12].ToString();
+                        VRFValue vrfValue = new VRFValue();
                         vrfValue.VRF = vrfSerialNumber;
-                        //vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
                         vrfValues.Add(vrfValue);
 
                         quoteLine.VRFValues = vrfValues;
 
+                        if (quote.QuoteLines == null)
+                        {
+                            quote.QuoteLines = new List<QuoteLine>();
+                        }
                         quote.QuoteLines.Add(quoteLine);
 
                         //Companies
@@ -281,7 +284,7 @@ namespace ImportRenewals.Business
                         }
 
                         Company reseller = new Company();
-                        reseller.VendorKey = beGeoId;
+                        //reseller.VendorKey = beGeoId;
                         reseller.Name = this.AdjustText(fields[25].ToString());
                         reseller.Line1 = this.AdjustText(fields[28].ToString());
                         reseller.Line2 = this.AdjustText(fields[29].ToString());
@@ -308,6 +311,13 @@ namespace ImportRenewals.Business
                         endUser.ContactEmail = this.AdjustText(fields[48].ToString());
 
                         quote.EndUser = endUser;
+
+                        //Grava a quote
+                        using (QuoteRepository repository = new QuoteRepository())
+                        {
+                            repository.Add(quote);
+                        }
+
                         success++;
                         line = reader.ReadLine();
                     }

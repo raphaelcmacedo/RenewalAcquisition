@@ -10,9 +10,8 @@ namespace ImportRenewals.Models
     {
         [Key]
         public Int64 CompanyId { get; set; }
-        public string Hash { get; set; }
-        public string WestconKey { get; set; }//Para os casos do arquivo DePara, representa o Be GEO ID
-        public string VendorKey { get; set; }//Para os casos do arquivo DePara, representa o Be ID                                         
+        //public string WestconKey { get; set; }//Para os casos do arquivo DePara, representa o Be GEO ID
+        //public string VendorKey { get; set; }//Para os casos do arquivo DePara, representa o Be ID                                         
         public String Name { get; set; }
         public String Line1 { get; set; }
         public String Line2 { get; set; }
