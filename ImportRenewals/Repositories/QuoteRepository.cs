@@ -43,6 +43,7 @@ namespace ImportRenewals.Repositories
                 {
                     //Avoid VRF changes
                     base.DbContext.Entry(vrfValue.VRF).State = EntityState.Unchanged;
+                    vrfValue.QuoteLine = quoteLine;
                     DbContext.Set<VRFValue>().Add(vrfValue);
                 }
             }

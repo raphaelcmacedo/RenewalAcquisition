@@ -263,6 +263,8 @@ namespace ImportRenewals.Business
                         string serialNumber = fields[12].ToString();
                         VRFValue vrfValue = new VRFValue();
                         vrfValue.VRF = vrfSerialNumber;
+                        vrfValue.Value = serialNumber;
+                        vrfValue.VRFLevel = "I";
                         vrfValues.Add(vrfValue);
 
                         quoteLine.VRFValues = vrfValues;

@@ -14,7 +14,7 @@ namespace ImportRenewals.Models
         public Int64 QuoteLineId { get; set; }
         public Int64 VRFId { get; set; }
         public string Value { get; set; }
-        public char VRFLevel { get; set; }//H: Header, L: Line, I: Item
+        public string VRFLevel { get; set; }//H: Header, L: Line, I: Item
 
         [ForeignKey("QuoteLineId")]
         public virtual QuoteLine QuoteLine { get; set; }
