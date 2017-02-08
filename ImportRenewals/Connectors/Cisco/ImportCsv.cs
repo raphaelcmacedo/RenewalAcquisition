@@ -223,7 +223,7 @@ namespace ImportRenewals.Business
                         quote.QuoteNumber = this.AdjustText(fields[17].ToString());
                         try
                         {
-                            quote.CloseDate = this.ToDate(this.AdjustText(fields[19].ToString()));
+                            quote.CloseDate = this.ToDate(this.AdjustText(fields[7].ToString()));
                         }
                         catch
                         {
@@ -263,7 +263,6 @@ namespace ImportRenewals.Business
 
                         //VRF Serial Number
                         string serialNumber = fields[12].ToString();
-                        VRFValue vrfValue = new VRFValue();
                         VRFValue vrfValue = new VRFValue();
                         vrfValue.VRF = vrfSerialNumber;
                         vrfValues.Add(vrfValue);
@@ -315,12 +314,7 @@ namespace ImportRenewals.Business
 
                         quote.EndUser = endUser;
 
-                        //Grava a quote
-                        using (QuoteRepository repository = new QuoteRepository())
-                        {
-                            repository.Add(quote);
-                        }
-
+                        //Grava a quote    
                         success++;
                         line = reader.ReadLine();
 
@@ -330,6 +324,15 @@ namespace ImportRenewals.Business
                         }else
                         {
                             quoteDictionary[quote.QuoteNumber].QuoteLines.Add(quoteLine);
+                        }
+                    }
+
+                    using (QuoteRepository repository = new QuoteRepository())
+                    {
+                        foreach (KeyValuePair<string, Quote> dict in quoteDictionary)
+                        {
+                            //repository.Add(dict.Value);
+                            Console.WriteLine("Value = {0}", dict.Key);
                         }
                     }
 
