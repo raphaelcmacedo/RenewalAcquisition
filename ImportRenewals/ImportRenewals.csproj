@@ -79,6 +79,7 @@
     <Compile Include="Contexts\QuoteContext.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\RenewalsController.cs" />
+    <Compile Include="Email\Renewal.cs" />
     <Compile Include="Email\_base.cs" />
     <Compile Include="Helpers\ExcelHelper.cs" />
     <Compile Include="Helpers\Settings.cs" />

@@ -14,7 +14,7 @@ namespace ImportRenewals.Email
             List<string> address;
 
             //remetente do email
-            mail.From = new MailAddress("");
+            mail.From = new MailAddress("noreply@westcon.com.br");
 
             //preenche endereços para quais o email será enviado
             mail.To.Clear();
@@ -50,17 +50,18 @@ namespace ImportRenewals.Email
 
             //preenche campo para cópias ocultas de email
             mail.Bcc.Clear();
-            
-            for (int i = 0; i < bcc.Count; i++)
+            if (bcc != null && bcc.Count > 0)
             {
-                //valida endereço recebido
-                address = this.FormatEmailAddress(bcc[i]);
-                for (int x = 0; x < address.Count; x++)
+                for (int i = 0; i < bcc.Count; i++)
                 {
-                    if (address[x] != "") mail.Bcc.Add(address[x]);
+                    //valida endereço recebido
+                    address = this.FormatEmailAddress(bcc[i]);
+                    for (int x = 0; x < address.Count; x++)
+                    {
+                        if (address[x] != "") mail.Bcc.Add(address[x]);
+                    }
                 }
             }
-
             //preenche anexos
             if (attachs != null && attachs.Count > 0)
             {
@@ -80,7 +81,7 @@ namespace ImportRenewals.Email
             mail.Body = body;
 
             //preenche dados do SMTP
-            SmtpClient mailClient = new SmtpClient("", 25);
+            SmtpClient mailClient = new SmtpClient(Helpers.Settings.ServidorSMTP, 25);
             mailClient.DeliveryMethod = SmtpDeliveryMethod.Network;
             //mailClient.Credentials = new System.Net.NetworkCredential("westcon\\TrackitUser", "zD8ivsRo");
 

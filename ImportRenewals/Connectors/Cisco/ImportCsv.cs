@@ -147,21 +147,21 @@ namespace ImportRenewals.Business
 
 
 
-        public Response ReadFile(Byte[] file,string region,bool async)
+        public Response ReadFile(Byte[] file,string region,bool async,string email)
         {
             Response resp = new Response();
             if (async)
             {
                 resp.Success = true;
                 resp.Message = "You will receive an email with more information when the process ends.";
-                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(file, region)));
+                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(file, region,email)));
                 thread.SetApartmentState(ApartmentState.STA);
 
                 thread.Start();
                 thread.Join();
             }else
             {
-                this.GetData(file, region);
+                this.GetData(file, region,email);
                 resp.Success = true;
                 resp.Message = "The data was saved in our database";
             }
@@ -170,10 +170,12 @@ namespace ImportRenewals.Business
            
         }
 
-        public void GetData(Byte[] file, string region)
+        public void GetData(Byte[] file, string region, string email)
         {
             Int32 success = 0, error = 0, count = 0;
             List<String> message = new List<string>();
+            Dictionary<string, Quote> quoteDictionary = new Dictionary<string, Quote>();
+
             try
             {
                 //Destaca o fabricante Cisco
@@ -261,13 +263,13 @@ namespace ImportRenewals.Business
                         //VRF Serial Number
                         //string serialNumber = fields[12].ToString();
                         quoteLine.VRFValues = new List<VRFValue>();
-                        //VRFValue vrfValue = new VRFValue();
+                        VRFValue vrfValue = new VRFValue();
                         vrfValue.VRF = vrfSerialNumber;
                         //vrfValue.VRF = "VRF_SERIAL_NUMBER_2";
                         vrfValues.Add(vrfValue);
 
                         quoteLine.VRFValues = vrfValues;
-
+                        quote.QuoteLines = new List<QuoteLine>();
                         quote.QuoteLines.Add(quoteLine);
 
                         //Companies
@@ -310,12 +312,23 @@ namespace ImportRenewals.Business
                         quote.EndUser = endUser;
                         success++;
                         line = reader.ReadLine();
+
+                        if (!quoteDictionary.ContainsKey(quote.QuoteNumber))
+                        {
+                            quoteDictionary.Add(quote.QuoteNumber, quote);
+                        }else
+                        {
+                            quoteDictionary[quote.QuoteNumber].QuoteLines.Add(quoteLine);
+                        }
                     }
 
+                    Email.Renewal mail = new Email.Renewal();
+                    mail.Success(message, success, error, email);
                 }
             }catch(Exception e)          
             {
-                throw e;
+                Email.Renewal mail = new Email.Renewal();
+                mail.Error(e.Message);
             }
         }
 
@@ -374,6 +387,7 @@ namespace ImportRenewals.Business
             text = text.Contains("\t") ? text.Replace("\t", "") : text;
             text = text.Contains("\r") ? text.Replace("\r", "") : text;
             text = text.Contains("&nbsp;") ? text.Replace("&nbsp;", "") : text;
+            text = text.Contains("\"") ? text.Replace("\"", "") : text;
 
             return text.Trim();
         }
