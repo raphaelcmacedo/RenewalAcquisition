@@ -10,7 +10,7 @@ namespace ImportRenewals.Models
     public class VRFValue
     {
         [Key]
-        public Int64 VRFValuelId { get;set;}
+        public Int64 VRFValueId { get;set;}
         public Int64 QuoteLineId { get; set; }
         public Int64 VRFId { get; set; }
         public string Value { get; set; }
