@@ -15,10 +15,18 @@ namespace ImportRenewals.Business
 {
     public class ImportCsv
     {
+
+        private int count = 0;
+        private int success = 0;
+        private int error = 0;
+        private List<String> message = new List<string>();
+        private Vendor vendor = null;
+        private VRF vrfSerialNumber = null;
+
         public Response CheckFile(Byte[] file,string fileName,string fileExtension)
         {
             Response resp = new Response();
-            int count = 0;
+            
             try
             {
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
@@ -159,7 +167,8 @@ namespace ImportRenewals.Business
 
                 thread.Start();
                 thread.Join();
-            }else
+            }
+            else
             {
                 this.GetData(file, region,email);
                 resp.Success = true;
@@ -172,20 +181,20 @@ namespace ImportRenewals.Business
 
         public void GetData(Byte[] file, string region, string email)
         {
-            Int32 success = 0, error = 0, count = 0;
-            List<String> message = new List<string>();
+            
+            
             Dictionary<string, Quote> quoteDictionary = new Dictionary<string, Quote>();
 
             try
             {
                 //Destaca o fabricante Cisco
-                Vendor vendor = null;
+                
                 using (VendorRepository repository = new VendorRepository())
                 {
                     vendor = repository.FindByName("Cisco");
                 }
 
-                VRF vrfSerialNumber = null;
+                
                 using (VRFRepository repository = new VRFRepository())
                 {
                     vrfSerialNumber = repository.FindByName("VRF_SERIAL_NUMBER_2");
@@ -195,21 +204,10 @@ namespace ImportRenewals.Business
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
                 {
                     String line = reader.ReadLine();
-                    String[] fields = line.Split(',');
-                    Quote quote = new Quote();
-                    QuoteLine quoteLine = new QuoteLine();
-                    DateTime start, end;
-
-                    string beGeoId;
-
-                    line = reader.ReadLine();
-                    int columns = line.Split(',').Length;
-
-                    line = reader.ReadLine();
-
                     while (!String.IsNullOrEmpty(line))
-                    {                        
-                        fields = line.Split(',');
+                    {
+                        String[] fields = line.Split(',');
+                        int columns = fields.Length;
                         count++;
 
                         if(fields.Length != columns)
@@ -220,116 +218,42 @@ namespace ImportRenewals.Business
                             continue;
                         }
 
-                        quote.QuoteNumber = this.AdjustText(fields[17].ToString());
-                        try
-                        {
-                            quote.CloseDate = this.ToDate(this.AdjustText(fields[7].ToString()));
-                        }
-                        catch
-                        {
-                            error++;
-                            message.Add("Error at line " + count + " - The Close Date for Quote Number " + quote.QuoteNumber + " wasn't an expected format.\n" + line);
-                            line = reader.ReadLine();
-                            continue;
-                        }
+                        string quoteNumber = this.AdjustText(fields[17].ToString());
 
-                        try
-                        {
-                            quote.ExpiryDate = this.ToDate(this.AdjustText(fields[57].ToString()));
+                        Quote quote = null;
+                        if (quoteDictionary.ContainsKey(quoteNumber))
+                        {//Use the quote already created and stored on the Dictionary
+                            quote = quoteDictionary[quoteNumber];
                         }
-                        catch
-                        {
-                            error++;
-                            message.Add("Error at line " + count + " - The Expiry Date for Quote Number " + quote.QuoteNumber + " wasn't an expected format.\n" + line);
-                            line = reader.ReadLine();
-                            continue;
+                        else
+                        {//Try to create a new quote
+                            try
+                            {
+                                quote = this.ReadQuote(fields, region);
+                                quoteDictionary[quoteNumber] = quote;
+                            }
+                            catch (Exception e)
+                            {
+                                error++;
+                                message.Add(e.Message);
+                                line = reader.ReadLine();
+                                continue;
+                            }
                         }
 
-                        quote.QuoteType = "Renewal";
-                        quote.Vendor = vendor;
-                        quote.CountryCode = region;
-                        quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
-                        
-                        //Companies
-                        beGeoId = this.AdjustText(fields[22].ToString());
-                        if (String.IsNullOrEmpty(beGeoId))
-                        {
-                            error++;
-                            message.Add("Error at line " + count + " - BE GEO ID was not found for Quote Number: " + quote.QuoteNumber + ".\n" + line);
-                            line = reader.ReadLine();
-                            continue;
-                        }
-
-                        Company reseller = new Company();
-                        //reseller.VendorKey = beGeoId;
-                        reseller.Name = this.AdjustText(fields[25].ToString());
-                        reseller.Line1 = this.AdjustText(fields[28].ToString());
-                        reseller.Line2 = this.AdjustText(fields[29].ToString());
-                        reseller.State = this.AdjustText(fields[31].ToString());
-                        reseller.City = this.AdjustText(fields[30].ToString());
-                        reseller.Country = this.AdjustText(fields[33].ToString());
-                        reseller.ZipCode = this.AdjustText(fields[32].ToString());
-                        reseller.ContactName = this.AdjustText(fields[34].ToString()) + " " + this.AdjustText((fields[35].ToString()));
-                        reseller.ContactEmail = this.AdjustText(fields[37].ToString());
-
-                        quote.Reseller = reseller;
-                        quote.ShipTo = reseller;
-                        quote.BillTo = reseller;
-
-                        Company endUser = new Company();
-                        endUser.Name = this.AdjustText(fields[39].ToString());
-                        endUser.Line1 = this.AdjustText(fields[40].ToString());
-                        endUser.Line2 = this.AdjustText(fields[41].ToString());
-                        endUser.City = this.AdjustText(fields[42].ToString());
-                        endUser.State = this.AdjustText(fields[43].ToString());
-                        endUser.Country = this.AdjustText(fields[45].ToString());
-                        endUser.ZipCode = this.AdjustText(fields[44].ToString());
-                        endUser.ContactName = this.AdjustText(fields[46].ToString()) + " " + this.AdjustText(fields[41].ToString());
-                        endUser.ContactEmail = this.AdjustText(fields[48].ToString());
-
-                        quote.EndUser = endUser;
-
-
-                        //Quoteline
-                        quoteLine.SKU = this.AdjustText(fields[11].ToString());
-                        start = this.ToDate(this.AdjustText(fields[6].ToString()));
-                        end = this.ToDate(this.AdjustText(fields[7].ToString()));
-                        quoteLine.ContractDuration = (Decimal)(end - start).TotalDays;
-                        quoteLine.ContractDurationUnit = 'D';
-                        quoteLine.Quantity = 1;//Campo não encontrado
-
-                        //VRFs
-                        List<VRFValue> vrfValues = new List<VRFValue>();
-
-                        //VRF Serial Number
-                        string serialNumber = fields[12].ToString();
-                        VRFValue vrfValue = new VRFValue();
-                        vrfValue.VRF = vrfSerialNumber;
-                        vrfValue.Value = serialNumber;
-                        vrfValue.VRFLevel = "I";
-                        vrfValues.Add(vrfValue);
-
-                        quoteLine.VRFValues = vrfValues;
-                        quote.QuoteLines = new List<QuoteLine>();
+                        QuoteLine quoteLine = this.ReadQuoteLine(fields);
                         if (quote.QuoteLines == null)
                         {
                             quote.QuoteLines = new List<QuoteLine>();
                         }
                         quote.QuoteLines.Add(quoteLine);
-
-                        //Grava a quote    
+                        
                         success++;
                         line = reader.ReadLine();
-
-                        if (!quoteDictionary.ContainsKey(quote.QuoteNumber))
-                        {
-                            quoteDictionary.Add(quote.QuoteNumber, quote);
-                        }else
-                        {
-                            quoteDictionary[quote.QuoteNumber].QuoteLines.Add(quoteLine);
-                        }
+                        
                     }
 
+                    //Save all the quotes on the Repository
                     using (QuoteRepository repository = new QuoteRepository())
                     {
                         foreach (KeyValuePair<string, Quote> dict in quoteDictionary)
@@ -341,11 +265,107 @@ namespace ImportRenewals.Business
                     Email.Renewal mail = new Email.Renewal();
                     mail.Success(message, success, error, email);
                 }
-            }catch(Exception e)          
+            }
+            catch (Exception e)          
             {
                 Email.Renewal mail = new Email.Renewal();
                 mail.Error(e.Message);
             }
+        }
+
+        private Quote ReadQuote(string[] fields, string region)
+        {
+            Quote quote = new Quote();
+            quote.QuoteNumber = this.AdjustText(fields[17].ToString());
+
+            try
+            {
+                quote.CloseDate = this.ToDate(this.AdjustText(fields[7].ToString()));
+            }
+            catch
+            {
+                throw new Exception("Error at line " + count + " - The Close Date for Quote Number " + quote.QuoteNumber + " wasn't an expected format.\n");
+            }
+
+            try
+            {
+                quote.ExpiryDate = this.ToDate(this.AdjustText(fields[57].ToString()));
+            }
+            catch
+            {
+                throw new Exception("Error at line " + count + " - The Expiry Date for Quote Number " + quote.QuoteNumber + " wasn't an expected format.\n");
+            }
+
+            quote.QuoteType = "Renewal";
+            quote.Vendor = vendor;
+            quote.CountryCode = region;
+            quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
+
+            //Companies
+            string beGeoId = this.AdjustText(fields[22].ToString());
+            if (String.IsNullOrEmpty(beGeoId))
+            {
+                throw new Exception("Error at line " + count + " - BE GEO ID was not found for Quote Number: " + quote.QuoteNumber + ".\n");
+            }
+
+            Company reseller = new Company();
+            //reseller.VendorKey = beGeoId;
+            reseller.Name = this.AdjustText(fields[25].ToString());
+            reseller.Line1 = this.AdjustText(fields[28].ToString());
+            reseller.Line2 = this.AdjustText(fields[29].ToString());
+            reseller.State = this.AdjustText(fields[31].ToString());
+            reseller.City = this.AdjustText(fields[30].ToString());
+            reseller.Country = this.AdjustText(fields[33].ToString());
+            reseller.ZipCode = this.AdjustText(fields[32].ToString());
+            reseller.ContactName = this.AdjustText(fields[34].ToString()) + " " + this.AdjustText((fields[35].ToString()));
+            reseller.ContactEmail = this.AdjustText(fields[37].ToString());
+
+            quote.Reseller = reseller;
+            quote.ShipTo = reseller;
+            quote.BillTo = reseller;
+
+            Company endUser = new Company();
+            endUser.Name = this.AdjustText(fields[39].ToString());
+            endUser.Line1 = this.AdjustText(fields[40].ToString());
+            endUser.Line2 = this.AdjustText(fields[41].ToString());
+            endUser.City = this.AdjustText(fields[42].ToString());
+            endUser.State = this.AdjustText(fields[43].ToString());
+            endUser.Country = this.AdjustText(fields[45].ToString());
+            endUser.ZipCode = this.AdjustText(fields[44].ToString());
+            endUser.ContactName = this.AdjustText(fields[46].ToString()) + " " + this.AdjustText(fields[41].ToString());
+            endUser.ContactEmail = this.AdjustText(fields[48].ToString());
+
+            quote.EndUser = endUser;
+
+            return quote;
+        }
+
+        private QuoteLine ReadQuoteLine(string[] fields)
+        {
+            QuoteLine quoteLine = new QuoteLine();
+
+            quoteLine.SKU = this.AdjustText(fields[11].ToString());
+            DateTime start = this.ToDate(this.AdjustText(fields[6].ToString()));
+            DateTime end = this.ToDate(this.AdjustText(fields[7].ToString()));
+            quoteLine.ContractDuration = (Decimal)(end - start).TotalDays;
+            quoteLine.ContractDurationUnit = 'D';
+            quoteLine.Quantity = 1;//Campo não encontrado
+
+            //VRFs
+            List<VRFValue> vrfValues = new List<VRFValue>();
+
+            //VRF Serial Number
+            string serialNumber = fields[12].ToString();
+            VRFValue vrfValue = new VRFValue();
+            vrfValue.VRF = vrfSerialNumber;
+            vrfValue.Value = serialNumber;
+            vrfValue.VRFLevel = "I";
+            vrfValues.Add(vrfValue);
+
+            quoteLine.VRFValues = vrfValues;
+            
+
+            return quoteLine;
         }
 
         private DateTime ToDate(string value)

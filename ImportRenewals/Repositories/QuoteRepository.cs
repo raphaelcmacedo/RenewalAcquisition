@@ -60,11 +60,11 @@ namespace ImportRenewals.Repositories
             }
         }
 
-        public Quote FindByNumber(string quoteNumber)
+        public Quote FindByNumber(string quoteNumber, long vendorId)
         {
             QuoteContext context = (QuoteContext)DbContext;
             Quote quote =  (from q in context.Quotes
-                    where q.QuoteNumber.Equals(quoteNumber)
+                    where q.QuoteNumber.Equals(quoteNumber) && q.VendorId.Equals(vendorId)
                     select q)
                     .Include(q => q.QuoteLines)
                     .Include(q => q.QuoteLines.Select(l => l.VRFValues))
@@ -77,7 +77,7 @@ namespace ImportRenewals.Repositories
 
         public void RemoveOldQuote(Quote newQuote)
         {
-            Quote old = this.FindByNumber(newQuote.QuoteNumber);
+            Quote old = this.FindByNumber(newQuote.QuoteNumber, newQuote.Vendor.VendorId);
             if (old != null)
             {
                 //Delete the lines
