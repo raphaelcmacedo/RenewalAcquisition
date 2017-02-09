@@ -21,6 +21,7 @@ namespace ImportRenewals.Models
         public String QuoteType { get; set; }
         public String CountryCode { get; set; }
         public String SalesOrg { get; set; }
+        public String Region { get; set; }
 
         public string QuoteRequesterName { get; set; }
         public string QuoteRequesterEmail { get; set; }

@@ -75,6 +75,20 @@ namespace ImportRenewals.Repositories
             return quote;
         }
 
+        public List<Quote> FindByVendorAndRegion(string vendorName, string region)
+        {
+            QuoteContext context = (QuoteContext)DbContext;
+            return (from q in context.Quotes
+                    where q.Vendor.Name.Equals(vendorName) && q.Region.Equals(region)
+                    select q)
+                    .Include(q => q.QuoteLines)
+                    .Include(q => q.QuoteLines.Select(l => l.VRFValues))
+                    .ToList();
+            
+        }
+
+
+
         public void RemoveOldQuote(Quote newQuote)
         {
             Quote old = this.FindByNumber(newQuote.QuoteNumber, newQuote.Vendor.VendorId);

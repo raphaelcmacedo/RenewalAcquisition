@@ -21,7 +21,7 @@ namespace ImportRenewals.Business
         private int error = 0;
         private List<String> message = new List<string>();
         private Vendor vendor = null;
-        private VRF vrfSerialNumber = null;
+        private Dictionary<string,VRF> VRFs = new Dictionary<string, VRF>();
 
         public Response CheckFile(Byte[] file,string fileName,string fileExtension)
         {
@@ -194,12 +194,8 @@ namespace ImportRenewals.Business
                     vendor = repository.FindByName("Cisco");
                 }
 
-                
-                using (VRFRepository repository = new VRFRepository())
-                {
-                    vrfSerialNumber = repository.FindByName("VRF_SERIAL_NUMBER_2");
-                }
 
+                FillVRFs();
 
                 using (StreamReader reader = new StreamReader(new MemoryStream(file)))
                 {
@@ -241,7 +237,7 @@ namespace ImportRenewals.Business
                             }
                         }
 
-                        QuoteLine quoteLine = this.ReadQuoteLine(fields);
+                        QuoteLine quoteLine = this.ReadQuoteLine(fields, quote);
                         if (quote.QuoteLines == null)
                         {
                             quote.QuoteLines = new List<QuoteLine>();
@@ -273,6 +269,26 @@ namespace ImportRenewals.Business
             }
         }
 
+        private void FillVRFs()
+        {
+            using (VRFRepository repository = new VRFRepository())
+            {
+                VRF serialNumber = repository.FindByName("VRF_SERIAL_NUMBER_2");
+                VRF vendorQuoteNumber = repository.FindByName("VRF_VENDOR_QUOTE_NUMBER");
+                VRF licStartDate = repository.FindByName("VRF_LIC_START_DATE");
+                VRF licEndDate = repository.FindByName("VRF_LIC_END_DATE");
+                VRF newRenew = repository.FindByName("VRF_NEW_RENEW");
+
+                VRFs.Add("VRF_SERIAL_NUMBER_2", serialNumber);
+                VRFs.Add("VRF_VENDOR_QUOTE_NUMBER", vendorQuoteNumber);
+                VRFs.Add("VRF_LIC_START_DATE", licStartDate);
+                VRFs.Add("VRF_LIC_END_DATE", licEndDate);
+                VRFs.Add("VRF_NEW_RENEW", newRenew);
+            }
+
+
+        }
+
         private Quote ReadQuote(string[] fields, string region)
         {
             Quote quote = new Quote();
@@ -298,6 +314,7 @@ namespace ImportRenewals.Business
 
             quote.QuoteType = "Renewal";
             quote.Vendor = vendor;
+            quote.Region = region;
             quote.CountryCode = region;
             quote.QuoteRequesterName = this.AdjustText(fields[14].ToString());//ou 16
 
@@ -340,14 +357,16 @@ namespace ImportRenewals.Business
             return quote;
         }
 
-        private QuoteLine ReadQuoteLine(string[] fields)
+        private QuoteLine ReadQuoteLine(string[] fields, Quote quote)
         {
             QuoteLine quoteLine = new QuoteLine();
 
             quoteLine.SKU = this.AdjustText(fields[11].ToString());
             DateTime start = this.ToDate(this.AdjustText(fields[6].ToString()));
             DateTime end = this.ToDate(this.AdjustText(fields[7].ToString()));
-            quoteLine.ContractDuration = (Decimal)(end - start).TotalDays;
+            double contractDuration = (end - start).TotalDays;
+
+            quoteLine.ContractDuration = (Decimal) contractDuration;
             quoteLine.ContractDurationUnit = 'D';
             quoteLine.Quantity = 1;//Campo não encontrado
 
@@ -356,16 +375,34 @@ namespace ImportRenewals.Business
 
             //VRF Serial Number
             string serialNumber = fields[12].ToString();
-            VRFValue vrfValue = new VRFValue();
-            vrfValue.VRF = vrfSerialNumber;
-            vrfValue.Value = serialNumber;
-            vrfValue.VRFLevel = "I";
-            vrfValues.Add(vrfValue);
+            vrfValues.Add(this.CreateVRFValue("VRF_SERIAL_NUMBER_2", serialNumber, "I"));
+
+            //VRF Vendor Quote Number
+            vrfValues.Add(this.CreateVRFValue("VRF_VENDOR_QUOTE_NUMBER", quote.QuoteNumber , "L"));
+
+            //VRF Lic Start and End Date
+            DateTime licStartDate = end.AddDays(1);
+            DateTime licEndDate = end.AddDays(contractDuration);
+            vrfValues.Add(this.CreateVRFValue("VRF_LIC_START_DATE", licStartDate.ToString(), "L"));
+            vrfValues.Add(this.CreateVRFValue("VRF_LIC_END_DATE", licEndDate.ToString(), "L"));
+
+            //VRF Renew
+            vrfValues.Add(this.CreateVRFValue("VRF_NEW_RENEW", "Renew", "L"));
 
             quoteLine.VRFValues = vrfValues;
             
 
             return quoteLine;
+        }
+
+        private VRFValue CreateVRFValue(string vrf, string value, string level)
+        {
+            VRFValue vrfValue = new VRFValue();
+            vrfValue.VRF = VRFs[vrf];
+            vrfValue.Value = value;
+            vrfValue.VRFLevel = level;
+
+            return vrfValue;
         }
 
         private DateTime ToDate(string value)
