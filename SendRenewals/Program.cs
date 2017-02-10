@@ -10,17 +10,11 @@ namespace SendRenewals
     {
         static void Main(string[] args)
         {
+            string vendorName = "Cisco";
+            string region = "USA";
 
-            System.Net.ServicePointManager.ServerCertificateValidationCallback +=
-            delegate (object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate,
-                                    System.Security.Cryptography.X509Certificates.X509Chain chain,
-                                    System.Net.Security.SslPolicyErrors sslPolicyErrors)
-            {
-                return true; // **** Always accept
-            };
-
+            Hybris hybris = new Hybris();
+            hybris.SendQuotes(vendorName, region);
         }
-
-
     }
 }
