@@ -221,6 +221,7 @@
     <Content Include="Content\fonts\gotham-light.svg" />
     <Content Include="Content\fonts\gotham-medium.svg" />
     <Content Include="Content\fonts\gotham-thin.svg" />
+    <Content Include="Content\img\loader.gif" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
