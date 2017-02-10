@@ -16,5 +16,6 @@ namespace ImportRenewals.Contexts
         public DbSet<Vendor> Vendors { get; set; }
         public DbSet<VRF> VRFs { get; set; }
         public DbSet<VRFValue> VRFValues { get; set; }
+        public DbSet<CompanyAssociation> CompanyAssociations { get; set; }
     }
 }

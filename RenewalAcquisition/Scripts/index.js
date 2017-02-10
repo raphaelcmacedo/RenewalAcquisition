@@ -70,7 +70,7 @@ document.getElementById('confirmBtn').addEventListener('click', function () {
         success: function (data) {
 
             if (data.Success || (!data.Success && data.MessageType === "Warning")) {
-               
+                alert(data.Message);
 
             } else {
                 document.getElementById("AlertaMensagem").textContent = object.Message;

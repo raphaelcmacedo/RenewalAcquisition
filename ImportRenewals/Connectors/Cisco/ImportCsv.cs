@@ -325,17 +325,26 @@ namespace ImportRenewals.Business
                 throw new Exception("Error at line " + count + " - BE GEO ID was not found for Quote Number: " + quote.QuoteNumber + ".\n");
             }
 
-            Company reseller = new Company();
-            //reseller.VendorKey = beGeoId;
-            reseller.Name = this.AdjustText(fields[25].ToString());
-            reseller.Line1 = this.AdjustText(fields[28].ToString());
-            reseller.Line2 = this.AdjustText(fields[29].ToString());
-            reseller.State = this.AdjustText(fields[31].ToString());
-            reseller.City = this.AdjustText(fields[30].ToString());
-            reseller.Country = this.AdjustText(fields[33].ToString());
-            reseller.ZipCode = this.AdjustText(fields[32].ToString());
-            reseller.ContactName = this.AdjustText(fields[34].ToString()) + " " + this.AdjustText((fields[35].ToString()));
-            reseller.ContactEmail = this.AdjustText(fields[37].ToString());
+            Company reseller = null;
+            //Verify if there is a company with this vendor code
+            using (CompanyRepository repository = new CompanyRepository())
+            {
+                reseller = repository.FindByAssociationVendorCode(beGeoId, vendor.VendorId, region);
+            }
+            if (reseller == null)
+            {
+                reseller = new Company();
+                reseller.Name = this.AdjustText(fields[25].ToString());
+                reseller.Line1 = this.AdjustText(fields[28].ToString());
+                reseller.Line2 = this.AdjustText(fields[29].ToString());
+                reseller.State = this.AdjustText(fields[31].ToString());
+                reseller.City = this.AdjustText(fields[30].ToString());
+                reseller.Country = this.AdjustText(fields[33].ToString());
+                reseller.ZipCode = this.AdjustText(fields[32].ToString());
+                reseller.ContactName = this.AdjustText(fields[34].ToString()) + " " + this.AdjustText((fields[35].ToString()));
+                reseller.ContactEmail = this.AdjustText(fields[37].ToString());
+            }
+            
 
             quote.Reseller = reseller;
             quote.ShipTo = reseller;

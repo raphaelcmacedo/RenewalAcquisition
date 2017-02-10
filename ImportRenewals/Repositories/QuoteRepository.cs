@@ -40,6 +40,24 @@ namespace ImportRenewals.Repositories
                 //Avoid vendor changes
                 base.DbContext.Entry(quote.Vendor).State = EntityState.Unchanged;
 
+                //Avoid companies changes if it has been fetched from company association
+                if (quote.EndUser != null && quote.EndUser.CompanyId > 0)
+                {
+                    base.DbContext.Entry(quote.EndUser).State = EntityState.Unchanged;
+                }
+                if (quote.BillTo != null && quote.BillTo.CompanyId > 0)
+                {
+                    base.DbContext.Entry(quote.BillTo).State = EntityState.Unchanged;
+                }
+                if (quote.BillTo != null && quote.ShipTo.CompanyId > 0)
+                {
+                    base.DbContext.Entry(quote.ShipTo).State = EntityState.Unchanged;
+                }
+                if (quote.Reseller != null && quote.Reseller.CompanyId > 0)
+                {
+                    base.DbContext.Entry(quote.Reseller).State = EntityState.Unchanged;
+                }
+
                 //Add quote
                 DbContext.Set<Quote>().Add(quote);
 

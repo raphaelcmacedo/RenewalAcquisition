@@ -40,7 +40,7 @@ namespace RenewalAcquisition.Controllers
                     bool async = Convert.ToBoolean(Request.Params["Async"].ToString());
                     string email = Request.Params["Email"].ToString();
 
-                    importer.ReadFile(file, "USA", async,email);
+                    resp = importer.ReadFile(file, "USA", async,email);
 
                 }
                 catch (Exception e)
@@ -48,7 +48,7 @@ namespace RenewalAcquisition.Controllers
                     return Json(new { Success = false, Message = e.Message, MessageType = "Error" }, JsonRequestBehavior.AllowGet);
                 }
             }
-            return Json(new { Success = resp.Success, Samples = resp.Sample, Message = resp.Message, MessageType = resp.TypeOfMessage }, JsonRequestBehavior.AllowGet);
+            return Json(new { Success = resp.Success, Message = resp.Message }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult CheckFile()

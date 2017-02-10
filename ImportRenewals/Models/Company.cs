@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -10,8 +11,7 @@ namespace ImportRenewals.Models
     {
         [Key]
         public Int64 CompanyId { get; set; }
-        //public string WestconKey { get; set; }//Para os casos do arquivo DePara, representa o Be GEO ID
-        //public string VendorKey { get; set; }//Para os casos do arquivo DePara, representa o Be ID                                         
+        public Int64 CompanyAssociationId { get; set; }
         public String Name { get; set; }
         public String Line1 { get; set; }
         public String Line2 { get; set; }
@@ -23,5 +23,8 @@ namespace ImportRenewals.Models
 
         public string ContactName { get; set; }
         public string ContactEmail { get; set; }
+
+        [ForeignKey("CompanyAssociationId")]
+        public virtual CompanyAssociation CompanyAssociation { get; set; }
     }
 }
