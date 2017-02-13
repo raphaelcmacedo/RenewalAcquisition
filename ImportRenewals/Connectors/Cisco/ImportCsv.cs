@@ -200,7 +200,7 @@ namespace ImportRenewals.Business
 
                 foreach (var line in File.ReadLines(filePath))
                 {
-                    if (String.IsNullOrEmpty(line))
+                    if (String.IsNullOrEmpty(line) || line.StartsWith("Distributor ID"))
                     {
                         continue;
                     }
@@ -305,7 +305,7 @@ namespace ImportRenewals.Business
 
             try
             {
-                quote.ExpiryDate = this.ToDate(this.AdjustText(fields[57].ToString()));
+                quote.ExpiryDate = this.ToDate(this.AdjustText(fields[19].ToString()));
             }
             catch
             {

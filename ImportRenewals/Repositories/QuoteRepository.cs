@@ -17,6 +17,8 @@ namespace ImportRenewals.Repositories
 
         public override void Add(Quote quote)
         {
+            base.DbContext.Configuration.AutoDetectChangesEnabled = false;
+
             using (DbContextTransaction t = base.DbContext.Database.BeginTransaction())
             {
 
@@ -38,26 +40,14 @@ namespace ImportRenewals.Repositories
                 }
 
                 //Avoid vendor changes
-                base.DbContext.Entry(quote.Vendor).State = EntityState.Unchanged;
+                base.IgnoreEntry<Vendor>(quote.Vendor);
 
                 //Avoid companies changes if it has been fetched from company association
-                if (quote.EndUser != null && quote.EndUser.CompanyId > 0)
-                {
-                    base.DbContext.Entry(quote.EndUser).State = EntityState.Unchanged;
-                }
-                if (quote.BillTo != null && quote.BillTo.CompanyId > 0)
-                {
-                    base.DbContext.Entry(quote.BillTo).State = EntityState.Unchanged;
-                }
-                if (quote.BillTo != null && quote.ShipTo.CompanyId > 0)
-                {
-                    base.DbContext.Entry(quote.ShipTo).State = EntityState.Unchanged;
-                }
-                if (quote.Reseller != null && quote.Reseller.CompanyId > 0)
-                {
-                    base.DbContext.Entry(quote.Reseller).State = EntityState.Unchanged;
-                }
-
+                base.IgnoreEntry<Company>(quote.EndUser);
+                base.IgnoreEntry<Company>(quote.BillTo);
+                base.IgnoreEntry<Company>(quote.ShipTo);
+                base.IgnoreEntry<Company>(quote.Reseller);
+                
                 //Add quote
                 DbContext.Set<Quote>().Add(quote);
 
@@ -82,7 +72,7 @@ namespace ImportRenewals.Repositories
         {
             QuoteContext context = (QuoteContext)DbContext;
             Quote quote =  (from q in context.Quotes
-                    where q.QuoteNumber.Equals(quoteNumber) && q.VendorId.Equals(vendorId)
+                    where q.QuoteNumber == quoteNumber && q.VendorId == vendorId
                     select q)
                     .Include(q => q.QuoteLines)
                     .Include(q => q.QuoteLines.Select(l => l.VRFValues))
