@@ -19,6 +19,7 @@
 </head>
 <body>
 
+    <a data-toggle="modal" data-target="#loading" style="position: absolute; top:0;left:0;">.</a>
 
     <div class="site-wrapper">
 
@@ -29,6 +30,7 @@
                 <div class="masthead clearfix">
                     <div class="inner">
                         <h2 class="masthead-brand" id="remover-alerta">Renewal</h2>
+
                     </div>
                 </div>
 
@@ -110,6 +112,19 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-loading" role="document">
+          <div class="loading">
+              <div class="signal"></div>
+              <h4>LOADING...</h4>
+          </div>
+        </div>
+    </div>
+
+
+
     <input type="hidden" id="async" value="false" />
 
     <!-- jQuery -->
