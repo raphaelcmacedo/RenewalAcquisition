@@ -16,6 +16,7 @@ D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\RenewalAcquisition.
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\RenewalAcquisition.pdb
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Antlr3.Runtime.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.dll
+D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.Extended.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.SqlServer.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\ImportRenewals.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Microsoft.AI.Agent.Intercept.dll
@@ -51,6 +52,7 @@ D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\System.Web.WebPages
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\WebGrease.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Prion.Tools.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\ImportRenewals.pdb
+D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.Extended.xml
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Microsoft.AI.DependencyCollector.xml
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Microsoft.AI.ServerTelemetryChannel.xml
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Microsoft.AI.Web.xml
@@ -83,5 +85,3 @@ D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\Microsoft.Owin.Secu
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\obj\Debug\RenewalAcquisition.csprojResolveAssemblyReference.cache
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\obj\Debug\RenewalAcquisition.dll
 D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\obj\Debug\RenewalAcquisition.pdb
-D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.Extended.dll
-D:\Desenvolvimento\RenewalAcquisition\RenewalAcquisition\bin\EntityFramework.Extended.xml

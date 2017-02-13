@@ -11,7 +11,7 @@ namespace ImportRenewals.Models
     {
         [Key]
         public Int64 CompanyId { get; set; }
-        public Int64 CompanyAssociationId { get; set; }
+        public Int64? CompanyAssociationId { get; set; }
         public String Name { get; set; }
         public String Line1 { get; set; }
         public String Line2 { get; set; }

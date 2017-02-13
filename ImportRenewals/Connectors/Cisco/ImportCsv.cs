@@ -23,32 +23,35 @@ namespace ImportRenewals.Business
         private Vendor vendor = null;
         private Dictionary<string,VRF> VRFs = new Dictionary<string, VRF>();
 
-        public Response CheckFile(Byte[] file,string fileName,string fileExtension)
+        public Response CheckFile(string filePath)
         {
             Response resp = new Response();
             
             try
             {
-                using (StreamReader reader = new StreamReader(new MemoryStream(file)))
+                int index = 0;
+                List<String> samples = new List<string>();
+                foreach (var line in File.ReadLines(filePath))
                 {
-                    String line = reader.ReadLine();
-                    String[] fields = line.Split(',');
-                    List<String> samples = new List<String>();
-
-                    this.ValidateHeader(fields);
-                    line = reader.ReadLine();
-                    int index = 0;
-
-                    while (!String.IsNullOrEmpty(line) && index < 10)
+                    if (index == 0)
                     {
-                        samples.Add(line);
-                        line = reader.ReadLine();
+                        String[] fields = line.Split(',');
+                        this.ValidateHeader(fields);
                         index++;
+                        continue;
+                    }
+                    if (index == 11)
+                    {
+                        break;
                     }
 
-                    resp.Sample = samples.ToArray();
-                    resp.Success = true;
+                    samples.Add(line);
+                    index++;
                 }
+
+                resp.Sample = samples.ToArray();
+                resp.Success = true;
+                
             }catch(Exception e)
             {
                 resp.Success = false;
@@ -58,18 +61,16 @@ namespace ImportRenewals.Business
 
             if (resp.Success)
             {
-                using (StreamReader reader = new StreamReader(new MemoryStream(file)))
-                {
-                    String full = reader.ReadToEnd();
-                    count = full.Split('\n').Length - 1;
+                long fileSize = new System.IO.FileInfo(filePath).Length;
+                long limit = 10 * 1024 * 1024;//10 MB
 
-                    resp.Success = (count < 10000) ? true : false;
-                    if (!resp.Success)
-                    {
-                        resp.TypeOfMessage = "Warning";
-                        resp.Message = "This file may contain tens of thousand lines, so an email will be sent to you when the process is over";
-                    }
-                }                
+                resp.Success = (fileSize > limit);
+                if (!resp.Success)
+                {
+                    resp.TypeOfMessage = "Warning";
+                    resp.Message = "This file is too big, so an email will be sent to you when the process is over";
+                }
+               
             }
 
             return resp;            
@@ -155,14 +156,14 @@ namespace ImportRenewals.Business
 
 
 
-        public Response ReadFile(Byte[] file,string region,bool async,string email)
+        public Response ReadFile(string filePath,string region,bool async,string email)
         {
             Response resp = new Response();
             if (async)
             {
                 resp.Success = true;
                 resp.Message = "You will receive an email with more information when the process ends.";
-                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(file, region,email)));
+                System.Threading.Thread thread = new Thread(new ParameterizedThreadStart(s => GetData(filePath, region,email)));
                 thread.SetApartmentState(ApartmentState.STA);
 
                 thread.Start();
@@ -170,7 +171,7 @@ namespace ImportRenewals.Business
             }
             else
             {
-                this.GetData(file, region,email);
+                this.GetData(filePath, region,email);
                 resp.Success = true;
                 resp.Message = "The data was saved in our database";
             }
@@ -179,7 +180,7 @@ namespace ImportRenewals.Business
            
         }
 
-        public void GetData(Byte[] file, string region, string email)
+        public void GetData(string filePath, string region, string email)
         {
             
             
@@ -197,70 +198,69 @@ namespace ImportRenewals.Business
 
                 FillVRFs();
 
-                using (StreamReader reader = new StreamReader(new MemoryStream(file)))
+                foreach (var line in File.ReadLines(filePath))
                 {
-                    String line = reader.ReadLine();
-                    while (!String.IsNullOrEmpty(line))
+                    if (String.IsNullOrEmpty(line))
                     {
-                        String[] fields = line.Split(',');
-                        int columns = fields.Length;
-                        count++;
+                        continue;
+                    }
+                    
+                    String[] fields = line.Split(',');
+                    int columns = fields.Length;
+                    count++;
 
-                        if(fields.Length != columns)
+                    if(fields.Length != columns)
+                    {
+                        error++;
+                        message.Add("Error at line " + count + " - An unexpected character was found.\n" + line);
+                        continue;
+                    }
+
+                    string quoteNumber = this.AdjustText(fields[17].ToString());
+
+                    Quote quote = null;
+                    if (quoteDictionary.ContainsKey(quoteNumber))
+                    {//Use the quote already created and stored on the Dictionary
+                        quote = quoteDictionary[quoteNumber];
+                    }
+                    else
+                    {//Try to create a new quote
+                        try
+                        {
+                            quote = this.ReadQuote(fields, region);
+                            quoteDictionary[quoteNumber] = quote;
+                        }
+                        catch (Exception e)
                         {
                             error++;
-                            message.Add("Error at line " + count + " - An unexpected character was found.\n" + line);
-                            line = reader.ReadLine();
+                            message.Add(e.Message);
                             continue;
                         }
-
-                        string quoteNumber = this.AdjustText(fields[17].ToString());
-
-                        Quote quote = null;
-                        if (quoteDictionary.ContainsKey(quoteNumber))
-                        {//Use the quote already created and stored on the Dictionary
-                            quote = quoteDictionary[quoteNumber];
-                        }
-                        else
-                        {//Try to create a new quote
-                            try
-                            {
-                                quote = this.ReadQuote(fields, region);
-                                quoteDictionary[quoteNumber] = quote;
-                            }
-                            catch (Exception e)
-                            {
-                                error++;
-                                message.Add(e.Message);
-                                line = reader.ReadLine();
-                                continue;
-                            }
-                        }
-
-                        QuoteLine quoteLine = this.ReadQuoteLine(fields, quote);
-                        if (quote.QuoteLines == null)
-                        {
-                            quote.QuoteLines = new List<QuoteLine>();
-                        }
-                        quote.QuoteLines.Add(quoteLine);
-                        
-                        success++;
-                        line = reader.ReadLine();
-                        
                     }
 
-                    //Save all the quotes on the Repository
-                    using (QuoteRepository repository = new QuoteRepository())
+                    QuoteLine quoteLine = this.ReadQuoteLine(fields, quote);
+                    if (quote.QuoteLines == null)
                     {
-                        foreach (KeyValuePair<string, Quote> dict in quoteDictionary)
-                        {
-                            repository.Add(dict.Value);
-                        }
+                        quote.QuoteLines = new List<QuoteLine>();
                     }
-
-                    Email.Renewal mail = new Email.Renewal();
-                    mail.Success(message, success, error, email);
+                    quote.QuoteLines.Add(quoteLine);
+                        
+                    success++;
+                        
                 }
+
+                //Save all the quotes on the Repository
+                using (QuoteRepository repository = new QuoteRepository())
+                {
+                    foreach (KeyValuePair<string, Quote> dict in quoteDictionary)
+                    {
+                        repository.Add(dict.Value);
+                    }
+                }
+
+                Email.Renewal mail = new Email.Renewal();
+                mail.Success(message, success, error, email);
+                
             }
             catch (Exception e)          
             {

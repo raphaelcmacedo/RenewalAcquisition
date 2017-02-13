@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 
@@ -18,29 +19,21 @@ namespace RenewalAcquisition.Controllers
         {
             ImportRenewals.Business.ImportCsv importer = new ImportRenewals.Business.ImportCsv();
             ImportRenewals.Models.Response resp = null;
+
+            string vendor = "Cisco";
+            string region = "USA";
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    byte[] file = null;
-                   
-                    foreach (string fileName in Request.Files)
-                    {
-                        HttpPostedFileBase hpf = Request.Files[fileName];
-                        if (hpf.ContentLength == 0)
-                        {
-                            continue;
-                        }
-                        using (var reader = new BinaryReader(hpf.InputStream))
-                        {
-                            file = reader.ReadBytes(hpf.ContentLength);
-                        }                       
-                        break;
-                    }
+                    System.Configuration.AppSettingsReader appReader = new System.Configuration.AppSettingsReader();
+                    string filePath = (string)appReader.GetValue("TempPath", typeof(string));
+                    filePath += vendor + ".csv";//Fixo por enquanto, refatorar
                     bool async = Convert.ToBoolean(Request.Params["Async"].ToString());
                     string email = Request.Params["Email"].ToString();
 
-                    resp = importer.ReadFile(file, "USA", async,email);
+                    resp = importer.ReadFile(filePath, "USA", async,email);
 
                 }
                 catch (Exception e)
@@ -53,15 +46,16 @@ namespace RenewalAcquisition.Controllers
 
         public ActionResult CheckFile()
         {
+            string vendor = "Cisco";
+            string region = "USA";
+
             ImportRenewals.Business.ImportCsv importer = new ImportRenewals.Business.ImportCsv();
             ImportRenewals.Models.Response resp = null;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    byte[] file = null;
-                    String fileExtension = string.Empty;
-                    String fileN = string.Empty;
+                    string filePath = null;
                     //Get the file
                     foreach (string fileName in Request.Files)
                     {
@@ -70,17 +64,12 @@ namespace RenewalAcquisition.Controllers
                         {
                             continue;
                         }
-                        using (var reader = new BinaryReader(hpf.InputStream))
-                        {
-                            file = reader.ReadBytes(hpf.ContentLength);
-                        }
 
-
-                        fileExtension = Path.GetExtension(hpf.FileName);
-                        fileN = hpf.FileName;
+                        filePath = Util.CopyFile(hpf, vendor);
+                        
                         break;
                     }
-                    resp = importer.CheckFile(file, fileN, fileExtension);
+                    resp = importer.CheckFile(filePath);
 
                 }
                 catch (Exception e)
