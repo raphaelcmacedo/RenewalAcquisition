@@ -22,7 +22,7 @@ namespace SendRenewals
 
                 HybrisWebReference.B2BDAQuotesImplService webService = new HybrisWebReference.B2BDAQuotesImplService();
                 X509Certificate2 cert = new X509Certificate2();
-                string certPath = Environment.CurrentDirectory + "\\ClientKeyStore.jks";
+                string certPath = Environment.CurrentDirectory + "\\ClientKeyStore.pfx";
                 cert.Import(certPath, "123456", X509KeyStorageFlags.DefaultKeySet);
                 webService.ClientCertificates.Add(cert);
                 
