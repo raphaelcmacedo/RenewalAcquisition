@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DiscoveryClientResultsFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Results>
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://10.156.138.83:9001/westconb2bsoapwebservices/services/B2BDAQuote?wsdl=B2BDAQuotes.wsdl" filename="B2BDAQuotes.wsdl" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://10.156.138.83:9001/westconb2bsoapwebservices/services/B2BDAQuote?wsdl" filename="B2BDAQuotesImplService.wsdl" />
+  </Results>
+</DiscoveryClientResultsFile>

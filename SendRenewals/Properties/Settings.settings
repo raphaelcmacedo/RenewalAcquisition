@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SendRenewals.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SendRenewals_HybrisWebReference_B2BDAQuotesImplService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://10.156.138.83:9001/westconb2bsoapwebservices/services/B2BDAQuote</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

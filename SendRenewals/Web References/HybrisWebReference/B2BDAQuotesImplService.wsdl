@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://impl.services.westconb2b.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://services.westconb2b.com/" name="B2BDAQuotesImplService" targetNamespace="http://impl.services.westconb2b.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="http://services.westconb2b.com/" location="http://10.156.138.83:9001/westconb2bsoapwebservices/services/B2BDAQuote?wsdl=B2BDAQuotes.wsdl" />
+  <wsdl:types />
+  <wsdl:binding name="B2BDAQuotesImplServiceSoapBinding" type="ns1:B2BDAQuotes">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="createQuote">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="createQuote">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="createQuoteResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="B2BDAQuotesImplService">
+    <wsdl:port name="B2BDAQuotesImplPort" binding="tns:B2BDAQuotesImplServiceSoapBinding">
+      <soap:address location="http://10.156.138.83:9001/westconb2bsoapwebservices/services/B2BDAQuote" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

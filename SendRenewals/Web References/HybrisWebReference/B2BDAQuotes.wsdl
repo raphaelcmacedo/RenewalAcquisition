@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://services.westconb2b.com/" name="B2BDAQuotes" targetNamespace="http://services.westconb2b.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema xmlns:tns="http://services.westconb2b.com/" xmlns:ns1="http://schemas.westconcomstor.com/Quote" elementFormDefault="unqualified" targetNamespace="http://services.westconb2b.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.westconcomstor.com/Quote" />
+      <xs:element name="createQuote" type="tns:createQuote" />
+      <xs:element name="createQuoteResponse" type="tns:createQuoteResponse" />
+      <xs:complexType name="createQuote">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="ns1:createQuote" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createQuoteResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.westconcomstor.com/Quote" targetNamespace="http://schemas.westconcomstor.com/Quote" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="createQuote" nillable="true" type="tns:createQuote" />
+      <xs:element name="createQuoteResponse" nillable="true" type="tns:createQuoteResponse" />
+      <xs:complexType name="createQuote">
+        <xs:sequence>
+          <xs:element name="Quote" type="tns:createDAQuote" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createDAQuote">
+        <xs:sequence>
+          <xs:element name="UniqueID" type="xs:string" />
+          <xs:element minOccurs="0" name="ExpiryDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Reseller" nillable="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" name="SAPcompanyID" nillable="true" type="xs:string" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="EndUser" nillable="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" name="SAPcompanyID" nillable="true" type="xs:string" />
+                <xs:element minOccurs="0" name="CompanyName" nillable="true" type="xs:string" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="BillTo" nillable="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" name="SAPcompanyID" nillable="true" type="xs:string" />
+                <xs:element minOccurs="0" name="CompanyName" nillable="true" type="xs:string" />
+                <xs:element name="Address">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element minOccurs="0" name="AddressLine1" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="AddressLine2" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="AddressLine3" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="Zipcode" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="ShipTo" nillable="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" name="SAPcompanyID" nillable="true" type="xs:string" />
+                <xs:element minOccurs="0" name="CompanyName" nillable="true" type="xs:string" />
+                <xs:element name="Address">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element minOccurs="0" name="AddressLine1" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="AddressLine2" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="AddressLine3" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="Zipcode" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="Currency" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="InternalRemarks" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ExternalRemarks" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="QuoteRequester" nillable="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                <xs:element minOccurs="0" name="email" nillable="true" type="xs:string" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="QuoteLines">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="QuoteLine">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element minOccurs="0" name="SKU" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="Quantity" nillable="true" type="xs:int" />
+                      <xs:element minOccurs="0" name="ListPrice" nillable="true" type="xs:decimal" />
+                      <xs:element minOccurs="0" name="DiscountPercent" nillable="true" type="xs:decimal" />
+                      <xs:element minOccurs="0" name="PurchasePrice" nillable="true" type="xs:decimal" />
+                      <xs:element minOccurs="0" name="SellingPrice" nillable="true" type="xs:decimal" />
+                      <xs:element minOccurs="0" name="GlobalPoints" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="ParentLine" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="InternalRemarks" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="ExternalRemarks" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="ContractDuration" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="ContractDurationUnit" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="ItemLevel" nillable="true">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element minOccurs="0" maxOccurs="unbounded" name="VRF" nillable="true">
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element minOccurs="0" name="Field" nillable="true" type="xs:string" />
+                                  <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+                                </xs:sequence>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element minOccurs="0" name="QtyLevel" nillable="true">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element minOccurs="0" maxOccurs="unbounded" name="VRF" nillable="true">
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element minOccurs="0" name="Field" nillable="true" type="xs:string" />
+                                  <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+                                </xs:sequence>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="CloseDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="VendorName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CountryCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SalesOrg" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="HeaderLevel" nillable="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="VRF" nillable="true">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element minOccurs="0" name="Field" nillable="true" type="xs:string" />
+                      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createQuoteResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="QuoteResponse" type="tns:createDAQuoteResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createDAQuoteResponse">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string" />
+          <xs:element name="status" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="createQuote">
+    <wsdl:part name="parameters" element="ns1:createQuote" />
+  </wsdl:message>
+  <wsdl:message name="createQuoteResponse">
+    <wsdl:part name="parameters" element="ns1:createQuoteResponse" />
+  </wsdl:message>
+  <wsdl:portType name="B2BDAQuotes">
+    <wsdl:operation name="createQuote">
+      <wsdl:input name="createQuote" message="ns1:createQuote" />
+      <wsdl:output name="createQuoteResponse" message="ns1:createQuoteResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
