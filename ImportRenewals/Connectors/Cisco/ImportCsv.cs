@@ -376,7 +376,7 @@ namespace ImportRenewals.Business
             double contractDuration = (end - start).TotalDays;
 
             quoteLine.ContractDuration = (Decimal) contractDuration;
-            quoteLine.ContractDurationUnit = 'D';
+            quoteLine.ContractDurationUnit = "D";
             quoteLine.Quantity = 1;//Campo não encontrado
 
             //VRFs

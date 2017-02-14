@@ -2,6 +2,7 @@
 using ImportRenewals.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -12,6 +13,7 @@ namespace SendRenewals
     public class Hybris
     {
         private static int limit = 500;
+        CultureInfo cultureInfo = new CultureInfo("en-US");
 
         public void SendQuotes(string vendorName, string region)
         {
@@ -139,8 +141,11 @@ namespace SendRenewals
                 wsQuoteLine.DiscountPercent = quoteLine.DiscountPercent;
                 wsQuoteLine.PurchasePrice = quoteLine.PurchasePrice;
                 wsQuoteLine.SellingPrice = quoteLine.SellingPrice;
+                
                 if (quoteLine.SetGlobalPoints != null)
                 {
+                    decimal globalPoints = quoteLine.SetGlobalPoints ?? 0;
+                    wsQuoteLine.GlobalPoints = globalPoints.ToString(cultureInfo);
                     wsQuoteLine.GlobalPoints = quoteLine.SetGlobalPoints.ToString();
                 }
                
@@ -148,8 +153,9 @@ namespace SendRenewals
                 wsQuoteLine.InternalRemarks = quoteLine.Remarks;
                 if (quoteLine.ContractDuration != null)
                 {
-                    wsQuoteLine.ContractDuration = quoteLine.ContractDuration.ToString();
-                    wsQuoteLine.ContractDurationUnit = quoteLine.ContractDurationUnit.ToString();
+                    decimal contractDuration = quoteLine.ContractDuration ?? 0;
+                    wsQuoteLine.ContractDuration = contractDuration.ToString(cultureInfo);
+                    wsQuoteLine.ContractDurationUnit = quoteLine.ContractDurationUnit;
                 }
                 //wsQuoteLine.EndDate = quoteLine.EndDate;
 

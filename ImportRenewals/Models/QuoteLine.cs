@@ -24,7 +24,7 @@ namespace ImportRenewals.Models
         public String Remarks { get; set; }
 
         public Decimal? ContractDuration { get; set; }
-        public Char ContractDurationUnit { get; set; }
+        public String ContractDurationUnit { get; set; }
         public DateTime? EndDate { get; set; }
 
         [ForeignKey("QuoteId")]
