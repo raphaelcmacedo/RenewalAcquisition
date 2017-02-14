@@ -118,8 +118,8 @@ namespace SendRenewals
                 }
                 wsQuote.EndUser.CompanyName = quote.EndUser.Name;
             }
-            
-            
+
+            wsQuote.QuoteLines = this.ConvertLines(quote.QuoteLines);
 
             HybrisWebReference.createQuote arg = new HybrisWebReference.createQuote();
             arg.Quote = wsQuote;
@@ -132,12 +132,55 @@ namespace SendRenewals
             List<HybrisWebReference.createDAQuoteQuoteLine> results = new List<HybrisWebReference.createDAQuoteQuoteLine>();
             foreach (QuoteLine quoteLine in quoteLines)
             {
-                HybrisWebReference.createDAQuoteQuoteLine wgQuoteLine = new HybrisWebReference.createDAQuoteQuoteLine();
+                HybrisWebReference.createDAQuoteQuoteLine wsQuoteLine = new HybrisWebReference.createDAQuoteQuoteLine();
+                wsQuoteLine.SKU = quoteLine.SKU;
+                wsQuoteLine.Quantity = quoteLine.Quantity;
+                wsQuoteLine.ListPrice = quoteLine.ListPrice;
+                wsQuoteLine.DiscountPercent = quoteLine.DiscountPercent;
+                wsQuoteLine.PurchasePrice = quoteLine.PurchasePrice;
+                wsQuoteLine.SellingPrice = quoteLine.SellingPrice;
+                if (quoteLine.SetGlobalPoints != null)
+                {
+                    wsQuoteLine.GlobalPoints = quoteLine.SetGlobalPoints.ToString();
+                }
+               
+                wsQuoteLine.ParentLine = quoteLine.ParentLine;
+                wsQuoteLine.InternalRemarks = quoteLine.Remarks;
+                if (quoteLine.ContractDuration != null)
+                {
+                    wsQuoteLine.ContractDuration = quoteLine.ContractDuration.ToString();
+                    wsQuoteLine.ContractDurationUnit = quoteLine.ContractDurationUnit.ToString();
+                }
+                //wsQuoteLine.EndDate = quoteLine.EndDate;
 
+
+                //VRFs
+                List<HybrisWebReference.createDAQuoteQuoteLineVRF> itemLevel = new List<HybrisWebReference.createDAQuoteQuoteLineVRF>();
+                List<HybrisWebReference.createDAQuoteQuoteLineVRF1> qtyLevel = new List<HybrisWebReference.createDAQuoteQuoteLineVRF1>();
+                foreach (VRFValue vrfValue in quoteLine.VRFValues)
+                {
+                    if (vrfValue.VRFLevel.Equals("L"))//Line
+                    {
+                        HybrisWebReference.createDAQuoteQuoteLineVRF wsVrfValue = new HybrisWebReference.createDAQuoteQuoteLineVRF();
+                        wsVrfValue.Field = vrfValue.VRF.Name;
+                        wsVrfValue.Value = vrfValue.Value;
+                        itemLevel.Add(wsVrfValue);
+                    }
+                    else if (vrfValue.VRFLevel.Equals("I"))//Line
+                    {
+                        HybrisWebReference.createDAQuoteQuoteLineVRF1 wsVrfValue = new HybrisWebReference.createDAQuoteQuoteLineVRF1();
+                        wsVrfValue.Field = vrfValue.VRF.Name;
+                        wsVrfValue.Value = vrfValue.Value;
+                        qtyLevel.Add(wsVrfValue);
+                    }
+                }
+                wsQuoteLine.ItemLevel = itemLevel.ToArray();
+                wsQuoteLine.QtyLevel = qtyLevel.ToArray();
+
+                results.Add(wsQuoteLine);
             }
 
             return results.ToArray();
-
         }
     }
 }
