@@ -12,14 +12,13 @@ namespace SendRenewals
 {
     public class Hybris
     {
-        private static int limit = 500;
+        private static int limit = 10;
         CultureInfo cultureInfo = new CultureInfo("en-US");
 
         public void SendQuotes(string vendorName, string region)
         {
             using (QuoteRepository repository = new QuoteRepository())
             {
-                limit = 1;
                 List<Quote> quotes = repository.FindByVendorAndRegion(vendorName, region, limit);
 
                 HybrisWebReference.B2BDAQuotesImplService webService = new HybrisWebReference.B2BDAQuotesImplService();
@@ -42,12 +41,14 @@ namespace SendRenewals
             wsQuote.UniqueID = quote.QuoteNumber;
             wsQuote.ExpiryDate = quote.ExpiryDate;
             wsQuote.CloseDate = quote.CloseDate;
-            wsQuote.Currency = quote.Currency;
+            //wsQuote.Currency = quote.Currency;
+            wsQuote.Currency = "USD";
             wsQuote.InternalRemarks = quote.InternalRemarks;
             wsQuote.ExternalRemarks = quote.ExternalRemarks;
             //wsQuote.QuoteType = quote.QuoteType;
             wsQuote.CountryCode = quote.CountryCode;
-            wsQuote.SalesOrg = quote.SalesOrg;
+            //wsQuote.SalesOrg = quote.SalesOrg;
+            wsQuote.SalesOrg = "2000";
 
             //Requester
             wsQuote.QuoteRequester = new HybrisWebReference.createDAQuoteQuoteRequester();

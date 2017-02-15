@@ -26,7 +26,7 @@ namespace SendRenewals.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://10.156.138.83:9001/westconb2bsoapwebservices/services/B2BDAQuote")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://10.156.138.23:9001/westconb2bsoapwebservices/services/B2BDAQuote")]
         public string SendRenewals_HybrisWebReference_B2BDAQuotesImplService {
             get {
                 return ((string)(this["SendRenewals_HybrisWebReference_B2BDAQuotesImplService"]));

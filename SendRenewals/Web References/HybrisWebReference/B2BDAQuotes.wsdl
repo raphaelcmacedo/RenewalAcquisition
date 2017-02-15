@@ -48,7 +48,7 @@
               <xs:sequence>
                 <xs:element minOccurs="0" name="SAPcompanyID" nillable="true" type="xs:string" />
                 <xs:element minOccurs="0" name="CompanyName" nillable="true" type="xs:string" />
-                <xs:element name="Address">
+                <xs:element minOccurs="0" name="Address" nillable="true">
                   <xs:complexType>
                     <xs:sequence>
                       <xs:element minOccurs="0" name="AddressLine1" nillable="true" type="xs:string" />
@@ -69,7 +69,7 @@
               <xs:sequence>
                 <xs:element minOccurs="0" name="SAPcompanyID" nillable="true" type="xs:string" />
                 <xs:element minOccurs="0" name="CompanyName" nillable="true" type="xs:string" />
-                <xs:element name="Address">
+                <xs:element minOccurs="0" name="Address" nillable="true">
                   <xs:complexType>
                     <xs:sequence>
                       <xs:element minOccurs="0" name="AddressLine1" nillable="true" type="xs:string" />
@@ -85,7 +85,7 @@
               </xs:sequence>
             </xs:complexType>
           </xs:element>
-          <xs:element minOccurs="0" name="Currency" nillable="true" type="xs:string" />
+          <xs:element name="Currency" type="xs:string" />
           <xs:element minOccurs="0" name="InternalRemarks" nillable="true" type="xs:string" />
           <xs:element minOccurs="0" name="ExternalRemarks" nillable="true" type="xs:string" />
           <xs:element minOccurs="0" name="QuoteRequester" nillable="true">
@@ -151,7 +151,7 @@
           <xs:element minOccurs="0" name="CloseDate" nillable="true" type="xs:dateTime" />
           <xs:element minOccurs="0" name="VendorName" nillable="true" type="xs:string" />
           <xs:element minOccurs="0" name="CountryCode" nillable="true" type="xs:string" />
-          <xs:element minOccurs="0" name="SalesOrg" nillable="true" type="xs:string" />
+          <xs:element name="SalesOrg" type="xs:string" />
           <xs:element minOccurs="0" name="HeaderLevel" nillable="true">
             <xs:complexType>
               <xs:sequence>
