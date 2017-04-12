@@ -69,7 +69,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="ClientKeyStore.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -78,6 +80,9 @@
     </None>
     <None Include="Web References\HybrisWebReference\B2BDAQuotes.wsdl" />
     <None Include="Web References\HybrisWebReference\B2BDAQuotesImplService.wsdl" />
+    <None Include="Web References\HybrisWebReference\createDAQuoteResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\HybrisWebReference\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
@@ -96,10 +101,10 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://10.156.138.23:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl">
+    <WebReferenceUrl Include="http://qa0091:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\HybrisWebReference\</RelPath>
-      <UpdateFromURL>http://10.156.138.23:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl</UpdateFromURL>
+      <UpdateFromURL>http://qa0091:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
