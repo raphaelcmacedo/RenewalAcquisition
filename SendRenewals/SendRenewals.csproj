@@ -101,10 +101,10 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://qa0091:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl">
+    <WebReferenceUrl Include="http://md0044:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\HybrisWebReference\</RelPath>
-      <UpdateFromURL>http://qa0091:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl</UpdateFromURL>
+      <UpdateFromURL>http://md0044:9001/westconb2bsoapwebservices/services/B2BDAQuote%3fwsdl</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
